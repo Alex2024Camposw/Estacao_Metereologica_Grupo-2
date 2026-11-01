@@ -6,6 +6,10 @@
 >- Sobre: Repositório para a documentação do projeto de Estação Metereológica do 2° Semestre.
 >- Membros: Alex Campos de Oliveira, Rafael Arruda, Rafael Alamino, Rafael Torso.
 
+>[!Important]
+ > `Referências`
+>- `Youtube:` (URL).
+
 <details>
 <summary> HTML </summary>
 
