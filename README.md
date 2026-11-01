@@ -1,5 +1,5 @@
 >[!Important]
- > `Repositório - Projetos`
+ > `Repositório - Estação Metereológica`
 >- Turma: 2° Semestre de Ciência da Computação.
 >- Faculdade: Universidade Paulista.
 >- Polo: UNIP Marquês.
