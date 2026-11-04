@@ -45,19 +45,19 @@ O projeto consiste no desenvolvimento de uma Estação Meteorológica capaz de r
 ## 1.5.1. Protótipo Físico Final
 | <p align = "center">  Imagem - Protótipo Físico Final </p> | 
 |---|
-| <img width="100%" height="80%" alt="image" src="https://github.com/user-attachments/assets/eb07876f-17ce-4c83-9811-8d2abdb0c1f8" />|
+| |
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 ## 1.5.2. Protótipo Físico I
 | <p align = "center">  Imagem - Protótipo Físico I </p> | 
 |---|
-| <img width="100%" height="80%" alt="image" src="<img width="610" height="397" alt="image" src="https://github.com/user-attachments/assets/7bf32f68-1efe-4e15-afe3-584d7cdae32b" />"|
+| <img width="100%" height="80%" alt="image" src="https://github.com/user-attachments/assets/7bf32f68-1efe-4e15-afe3-584d7cdae32b"/> |
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 ## 1.5.3. Protótipo Físico II
 | <p align = "center">  Imagem - Protótipo Físico II </p> | 
 |---|
-| <img width="100%" height="80%" alt="image" src="https://github.com/user-attachments/assets/eb07876f-17ce-4c83-9811-8d2abdb0c1f8" />|
+| <img width="100%" height="80%" alt="image" src="https://github.com/user-attachments/assets/eb07876f-17ce-4c83-9811-8d2abdb0c1f8" /> |
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 #  1.6. Demonstrações da Interface
@@ -69,18 +69,25 @@ O projeto consiste no desenvolvimento de uma Estação Meteorológica capaz de r
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 ## 1.6.2. Interface II
-| <p align = "center">  Interface I </p> | 
+| <p align = "center">  Interface II </p> | 
 |---|
-| |
+| <img width="854" height="480" alt="ITF 2" src="https://github.com/user-attachments/assets/70304d9e-a31e-4f86-8702-ca03200dd8ce" /> |
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 ## 1.6.3. Interface III
-| <p align = "center">  Interface I </p> | 
+| <p align = "center">  Interface III </p> | 
+|---|
+| <img width="854" height="480" alt="ITF 3" src="https://github.com/user-attachments/assets/61e00d33-614e-48c0-a67f-26d25019d6a8" /> |
+| <p align = "center"> Fonte: Grupo 2, 2026. </p> |
+
+## 1.6.4. Interface IV
+| <p align = "center">  Interface IV </p> | 
 |---|
 | |
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 # 2. CODIFICAÇÃO:
+<details>
 <summary> <strong>HTML</strong> </summary>
 <details>
 <summary> Index.HTML </summary>
