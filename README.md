@@ -262,6 +262,7 @@
     <title>Análises - ClimaSys</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="subpage">
     <div class="container-single">
@@ -278,9 +279,106 @@
                 <h3>Exportar Relatórios</h3>
                 <p>Selecione um período para baixar os dados tratados da rede de sensoriamento.</p>
                 <div class="form-group-inline">
-                    <input type="date">
-                    <button class="btn-primary">Gerar Relatório CSV</button>
+                    <input type="date" id="Date_Filter_Report">
+                    <button class="btn-primary" id="btnRelatorio">Gerar Relatório CSV</button>
                 </div>
+            </div>
+             <!-- Indicadores em Tempo Real -->
+            <div class="content-card">
+                <h3>Indicadores em Tempo Real (Gauges)</h3>
+                <div class="insights" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div class="card">
+                        <div class="middle">
+                            <div class="left">
+                                <h3>Temperatura</h3>
+                                <h1 id="temperatura">--</h1>
+                            </div>
+                        </div>
+                        <small class="text-muted" id="%_temperatura">--</small>
+                    </div>
+
+                    <div class="card">
+                        <div class="middle">
+                            <div class="left">
+                                <h3>Umidade</h3>
+                                <h1 id="umidade">--</h1>
+                            </div>
+                        </div>
+                        <small class="text-muted" id="%_umidade">--</small>
+                    </div>
+
+                    <div class="card">
+                        <div class="middle">
+                            <div class="left">
+                                <h3>Pressão do Ar</h3>
+                                <h1 id="pressão">--</h1>
+                            </div>
+                        </div>
+                        <small class="text-muted" id="%_pressão">--</small>
+                    </div>
+
+                    <div class="card">
+                        <div class="middle">
+                            <div class="left">
+                                <h3>Luminosidade</h3>
+                                <h1 id="luminosidade">--</h1>
+                            </div>
+                        </div>
+                        <small class="text-muted" id="%_luminosidade">--</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico Histórico -->
+<div class="content-card" style="margin-top: 2rem;">
+    <h3>Gráficos Históricos da Estação</h3>
+    <div id="containerGraficos" class="graficos-grid">
+        <div class="grafico-card">
+            <h4>Temperatura</h4>
+            <div class="grafico-area">
+                <canvas id="graficoHistorico_temperatura"></canvas>
+            </div>
+        </div>
+
+        <div class="grafico-card">
+            <h4>Umidade</h4>
+            <div class="grafico-area">
+                <canvas id="graficoHistorico_umidade"></canvas>
+            </div>
+        </div>
+
+        <div class="grafico-card">
+            <h4>Pressão atmosférica</h4>
+            <div class="grafico-area">
+                <canvas id="graficoHistorico_pressão"></canvas>
+            </div>
+        </div>
+
+        <div class="grafico-card">
+            <h4>Qualidade do ar (gás)</h4>
+            <div class="grafico-area">
+                <canvas id="graficoHistorico_gás"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- Histórico de Registros -->
+            <div class="content-card recent-orders" style="margin-top: 2rem;">
+                <h3>Histórico de Registros</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Estação</th>
+                            <th>ID da Estação</th>
+                            <th>Data e Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3">Carregando histórico...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
@@ -428,10 +526,7 @@
             </div>
         </main>
     </div>
-
-    <!-- JS do Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Seu JS principal -->
     <script src="js/Mapa.js"></script>
 </body>
 </html>
@@ -970,15 +1065,6 @@ main .insights svg circle {
     stroke-width: 10;
     stroke-linecap: round;
     transform: translate(8px, 8px);
-    
-    /* Circunferência total do raio 36 */
-    stroke-dasharray: 226; 
-    
-    /* Valor inicial (0% visível) */
-    stroke-dashoffset: 226; 
-    
-    /* Animação suave ao alterar o valor */
-    transition: stroke-dashoffset 1s ease-in-out; 
 }
 
 main .insights .temperature svg circle {
@@ -1632,6 +1718,90 @@ main .recent-orders a {
     width: 100%;
     min-height: 500px;
 }
+
+/* ==========================================
+   ESTILOS PARA ALERTAS FLUTUANTES (TOASTS)
+   ========================================== */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    min-width: 280px;
+    padding: 12px 16px;
+    background: var(--color-white);
+    color: var(--color-dark);
+    border-left: 5px solid #41f1b6;
+    border-radius: var(--border-radius-1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    animation: slideInRight 0.3s ease, fadeOut 0.5s ease 4.5s forwards;
+}
+
+.toast .toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast .toast-icon {
+    color: #0d9467;
+    font-size: 1.3rem;
+}
+
+.toast .toast-close {
+    cursor: pointer;
+    color: var(--color-info-dark);
+    font-size: 1.1rem;
+    background: none;
+    border: none;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+/* ==========================================
+   ESTILOS PARA ALERTAS IN-LINE (BADGES)
+   ========================================== */
+.badge-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-left: 6px;
+    text-transform: uppercase;
+}
+
+.badge-inline.ok {
+    background-color: rgba(65, 241, 182, 0.2);
+    color: #0d9467;
+}
+
+.badge-inline.alerta {
+    background-color: rgba(255, 119, 130, 0.2);
+    color: #d32f2f;
+}
 ```
 
 </details>
@@ -1711,9 +1881,17 @@ WHERE DATE(data_hora) = '2026-09-30';
 <summary> Main_Back.py </summary>
   
 ```csharp
+
+# Importa a classe responsável por armazenar e atualizar os dados dos sensores.
 from js.Back_End.Dados import Dado
+
+# Importa a função responsável por filtrar os dados históricos.
 from js.Back_End.Filtragem import Filtrar_Dados
+
+# Importa funções para verificar e padronizar datas.
 from js.Back_End.Data import Verificar_Data, Formatar_para_Padrao
+
+# Importa funções responsáveis pela comunicação com o banco de dados.
 from js.Back_End.Banco import (
     Inserir_Dados_no_Banco,
     Puxar_Data,
@@ -1721,78 +1899,167 @@ from js.Back_End.Banco import (
     Puxar_Historico,
     Puxar_Nome_Estacao
 )
+
+# Importa a classe responsável por consultar a API meteorológica.
 from js.Back_End.HTTP import API
 
+# Importa a classe responsável pelo gerenciamento de alertas.
+from js.Back_End.Alertas import Alerta
+
+# Importa os recursos necessários para criar e gerenciar a aplicação Flask.
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from dotenv import load_dotenv
 
+# Importa bibliotecas para carregar variáveis de ambiente,
+# controlar o tempo, executar tarefas em paralelo e realizar cálculos.
+from dotenv import load_dotenv
 import os
 import time
 import threading
 import math
+import numpy as np
 
-def Limpar_Valores_JSON(dados):
-    if isinstance(dados, dict):
-        return {
-            chave: Limpar_Valores_JSON(valor)
-            for chave, valor in dados.items()
-        }
 
-    if isinstance(dados, list):
-        return [Limpar_Valores_JSON(valor) for valor in dados]
+# Lista utilizada para armazenar valores identificados como exceções pelo filtro MMS.
+Lista_Excecoes = []
 
-    if isinstance(dados, float) and not math.isfinite(dados):
-        return None
 
-    return dados
+# Função responsável por corrigir valores que não podem ser convertidos para JSON.
+# Valores como NaN e infinito são substituídos por zero.
+def Corrigir_Valor_JSON(valor):
+    if isinstance(valor, float) and not math.isfinite(valor):
+        return 0
+    return valor
 
+
+# Função responsável por aplicar o filtro de Média Móvel Simples (MMS).
+# Tipo_Dado representa o sensor que terá seus valores filtrados.
+# Intervalo define a quantidade de valores utilizados no cálculo da média.
+# Tolerancia define a diferença máxima permitida entre o valor atual e a média.
+def Filtro_MMS(Tipo_Dado, Intervalo=100, Tolerancia=100):
+    global Lista_Excecoes, OBJ_Alerta
+
+    print("No filtro MMS.")
+
+    # Percorre todos os valores recebidos pelo sensor.
+    for Valor in Tipo_Dado.Campo_Valor:
+
+        # Converte o valor atual para o tipo float.
+        valor_atual = float(Valor)
+
+        # Verifica se já existem dados suficientes para calcular a média móvel.
+        if len(Tipo_Dado.Campo_Filtrado) >= Intervalo:
+
+            # Seleciona os últimos valores aceitos pelo filtro.
+            ultimos_dados = Tipo_Dado.Campo_Filtrado[-Intervalo:]
+
+            # Calcula a média dos valores selecionados.
+            mms_atual = sum(ultimos_dados) / Intervalo
+
+            # Verifica se a diferença entre o valor atual e a média ultrapassa a tolerância.
+            if abs(valor_atual - mms_atual) > Tolerancia:
+
+                # Registra o valor considerado uma exceção.
+                Lista_Excecoes.append({
+                    "Campo": Tipo_Dado.Campo_Tipo,
+                    "Excecao": valor_atual,
+                    "Mms_esperada": mms_atual
+                })
+
+                # Ignora o valor atual e continua a análise dos próximos dados.
+                continue
+
+        # Se o valor estiver dentro da tolerância, ele é aceito pelo filtro.
+        Tipo_Dado.Campo_Filtrado.append(valor_atual)
+
+
+# Carrega as variáveis de ambiente armazenadas no arquivo .env.
 load_dotenv()
+
+# Cria a aplicação Flask.
 app = Flask(__name__)
 
+# Define os endereços autorizados a realizar requisições ao backend.
 Origens_Permitidas = [
     "http://127.0.0.1:5500",
     "http://localhost:5500",
     "https://projetos-estacao-meteorol-gica-grupo-3de5.vercel.app"
 ]
 
+# Configura o CORS utilizando a lista de origens permitidas.
 CORS(app, origins=Origens_Permitidas)
+
+# Obtém a porta de execução disponibilizada pelo servidor.
+# Caso não exista uma variável PORT, utiliza a porta 3000.
 PORT = int(os.getenv("PORT", 3000))
 
 
+# Realiza a primeira consulta à API meteorológica.
+# A resposta é armazenada em dados_API e seu código HTTP em Status_Code.
 dados_API, Status_Code = API.Buscar_Dados_HTTP(True)
 
+# Exibe os dados recebidos no terminal.
+print(dados_API)
+
+
+# Lista utilizada para armazenar os dados gerais da estação.
 Lista_de_Dados = []
 
+# Lista responsável por armazenar os alertas meteorológicos.
+Lista_Alerta = []
+
+# Instancia a classe de alertas, passando a lista que receberá os alertas.
+OBJ_Alerta = Alerta(Lista_Alerta)
+
+
+# Inicializa as referências dos sensores.
+# Os objetos serão criados após uma consulta bem-sucedida à API.
 Temperatura = None
 Umidade = None
 Luminosidade = None
 Gas = None
 Pressao = None
 
+
+# Armazena a quantidade de campos atualizados durante uma leitura.
 Qtd_Campos_Atualizados = 0
 
+# Recupera o histórico de leituras armazenado no banco de dados.
 Historico_de_Dados = Puxar_Historico()
+
+# Inicializa listas utilizadas para armazenar valores das leituras e da estação.
 Valores_Leitura = []
 Valores_Estacao = []
 
+
+# Obtém o identificador do último registro disponível na API.
 API_ID_Anterior = dados_API["channel"]["last_entry_id"]
 API_Novo_ID = dados_API["channel"]["last_entry_id"]
 
+# Indica se os dados da estação foram atualizados.
 Dados_Atualizados = False
 
+
+# Recupera o identificador da estação meteorológica no banco de dados.
 Id_Estacao = Puxar_Id("tbEstacao")
 
+# Obtém as informações de identificação e localização da estação pela API.
 Nome_Estacao = dados_API["channel"]["name"]
 latitude = dados_API["channel"]["latitude"]
 longitude = dados_API["channel"]["longitude"]
 
+# Inicializa as variáveis responsáveis pelo controle de data e horário.
 Data_Hora_Atual = None
 Data_Hora_Anterior = Puxar_Data()
 
+
+# Verifica se a estação já está cadastrada no banco de dados.
 if Id_Estacao is None:
+
+    # Caso não exista, utiliza o identificador fornecido pela API.
     Id_Estacao = dados_API["channel"]["id"]
 
+    # Organiza as informações necessárias para cadastrar a estação.
     Valores_Estacao = [
         Id_Estacao,
         Nome_Estacao,
@@ -1800,75 +2067,121 @@ if Id_Estacao is None:
         longitude
     ]
 
+    # Insere os dados da estação na tabela correspondente.
     Inserir_Dados_no_Banco(
         Valores_Estacao,
         "tbEstacao"
     )
 
 else:
+    # Informa que a estação já possui cadastro.
     print("Estacao ja existe.")
 
-if Status_Code == 200:
-    Lista_de_Dados.extend([
-        Dado("field1", dados_API["feeds"]),
-        Dado("field2", dados_API["feeds"]),
-        Dado("field3", dados_API["feeds"]),
-        Dado("field6", dados_API["feeds"]),
-        Dado("field7", dados_API["feeds"])
-    ])
-    Temperatura = Lista_de_Dados[0]
-    Umidade = Lista_de_Dados[1]
-    Luminosidade = Lista_de_Dados[2]
-    Gas = Lista_de_Dados[3]
-    Pressao = Lista_de_Dados[4]
 
-
+# Função responsável por atualizar os objetos dos sensores
+# e realizar o processamento dos dados recebidos.
 def Atualizar_Objetos():
-    global Qtd_Campos_Atualizados
 
+    print(">>> ATUALIZAR OBJETOS EXECUTADA <<<")
+
+    # Permite modificar as variáveis globais da aplicação.
+    global Qtd_Campos_Atualizados, Dados_Atualizados
+
+    # Atualiza os valores de cada sensor utilizando os dados recebidos da API.
     Temperatura.Atualizar_Dados(dados_API["feeds"])
     Umidade.Atualizar_Dados(dados_API["feeds"])
     Luminosidade.Atualizar_Dados(dados_API["feeds"])
     Gas.Atualizar_Dados(dados_API["feeds"])
     Pressao.Atualizar_Dados(dados_API["feeds"])
 
+    # Aplica o filtro MMS aos sensores.
+    # Cada sensor possui um intervalo e uma tolerância específicos.
+    Filtro_MMS(Temperatura, Intervalo=50, Tolerancia=10)
+    Filtro_MMS(Umidade, Intervalo=50, Tolerancia=10)
+    Filtro_MMS(Luminosidade, Intervalo=50, Tolerancia=150)
+    Filtro_MMS(Gas, Intervalo=50, Tolerancia=50)
+    Filtro_MMS(Pressao, Intervalo=50, Tolerancia=5)
+
+    # Verifica se os valores filtrados ultrapassam os limites estabelecidos.
+    # Caso ultrapassem, a classe de alertas poderá registrar um alerta.
+    OBJ_Alerta.Procurar_Alerta(
+        "Temperatura", 10, float(Temperatura.Campo_Filtrado[-1])
+    )
+    OBJ_Alerta.Procurar_Alerta(
+        "Umidade", 10, float(Umidade.Campo_Filtrado[-1])
+    )
+    OBJ_Alerta.Procurar_Alerta(
+        "Luminosidade", 150, float(Luminosidade.Campo_Filtrado[-1])
+    )
+    OBJ_Alerta.Procurar_Alerta(
+        "Gas", 50, float(Gas.Campo_Filtrado[-1])
+    )
+    OBJ_Alerta.Procurar_Alerta(
+        "Pressao", 5, float(Pressao.Campo_Filtrado[-1])
+    )
+
+    # Indica que o processo de atualização foi concluído.
+    Dados_Atualizados = True
+
+    # Registra a quantidade de campos atualizados.
     Qtd_Campos_Atualizados = Dado.Qtd_Atualizado
 
+    # Zera o contador para a próxima atualização.
     Dado.Zerar_Contabilizador()
 
-def Montar_Valores_Banco():
-    for Element in Lista_de_Dados:
-        Element.Campo_Valor = [
-            None if math.isnan(Valor) else Valor
-            for Valor in Element.Campo_Valor
-        ]
 
+# Função responsável por organizar os valores que serão armazenados no banco.
+def Montar_Valores_Banco():
+
+    # Retorna os dados da estação na ordem esperada pela tabela tbLeitura.
     return [
         Id_Estacao,
-        Temperatura.Campo_Valor[-1],
-        Gas.Campo_Valor[-1],
-        Luminosidade.Campo_Valor[-1],
-        Umidade.Campo_Valor[-1],
-        Pressao.Campo_Valor[-1],
+        Temperatura.Campo_Filtrado[-1],
+        Gas.Campo_Filtrado[-1],
+        Luminosidade.Campo_Filtrado[-1],
+        Umidade.Campo_Filtrado[-1],
+        Pressao.Campo_Filtrado[-1],
         Data_Hora_Atual
     ]
 
+
+# Função responsável por inserir uma nova leitura no banco de dados
+# e atualizar o histórico disponibilizado pela aplicação.
 def Atualizar_Banco():
+
+    # Permite atualizar as variáveis globais utilizadas pela aplicação.
     global Valores_Leitura
     global Historico_de_Dados
     global Nome_Estacao
 
+    # Organiza os valores da leitura atual.
     Valores_Leitura = Montar_Valores_Banco()
 
-    Inserir_Dados_no_Banco(
-        Valores_Leitura,
-        "tbLeitura"
-    )
+    # Insere a leitura na tabela tbLeitura.
+    Inserir_Dados_no_Banco(Valores_Leitura, "tbLeitura")
 
+    # Recupera novamente o histórico após a inserção.
     Historico_de_Dados = Puxar_Historico()
+
+    # Atualiza o nome da estação utilizando o banco de dados.
     Nome_Estacao = Puxar_Nome_Estacao()
 
+
+# Inicializa os objetos dos sensores caso a primeira requisição HTTP tenha sido bem-sucedida.
+if Status_Code == 200:
+
+    Temperatura = Dado("field1", dados_API["feeds"])
+    Umidade = Dado("field2", dados_API["feeds"])
+    Luminosidade = Dado("field3", dados_API["feeds"])
+    Gas = Dado("field6", dados_API["feeds"])
+    Pressao = Dado("field7", dados_API["feeds"])
+
+
+# Função principal responsável por consultar periodicamente a API
+# e atualizar os dados da estação meteorológica.
 def Main():
+
+    # Declara as variáveis globais que serão modificadas dentro da função.
     global dados_API
     global Status_Code
     global API_Novo_ID
@@ -1877,84 +2190,128 @@ def Main():
     global Data_Hora_Anterior
     global Dados_Atualizados
 
+    print(">>> FUNÇÃO MAIN INICIADA <<<")
+
+    # Inicia o ciclo contínuo de atualização.
     while True:
-        time.sleep(10)
 
-        Dado.Zerar_Contabilizador()
+        # Aguarda cinco segundos antes de realizar uma nova consulta.
+        time.sleep(5)
 
+        # Atualiza os objetos dos sensores com os dados disponíveis.
+        Atualizar_Objetos()
+
+        print(">>> CONSULTANDO API <<<")
+
+        # Consulta novamente a API meteorológica.
         dados_API, Status_Code = API.Buscar_Dados_HTTP(True)
 
+        # Verifica se a consulta foi realizada com sucesso.
         if Status_Code != 200:
             print("Erro ao consultar a API:", Status_Code)
             continue
 
+        # Obtém o identificador do registro mais recente.
         API_Novo_ID = dados_API["channel"]["last_entry_id"]
 
+        # Compara o identificador atual com o último identificador registrado.
+        # Se forem iguais, significa que não existe uma nova leitura.
         if API_Novo_ID == API_ID_Anterior:
             print("Nenhuma atualizacao.")
             continue
 
+        # Obtém e padroniza a data e o horário da última leitura.
         Data_Hora_Atual = Formatar_para_Padrao(
             dados_API["feeds"][-1]["created_at"]
         )
 
         print("Data-Hora:", Data_Hora_Atual)
 
-        if Verificar_Data(
-            Data_Hora_Anterior,
-            Data_Hora_Atual
-        ):
+        # Verifica se a leitura já foi registrada anteriormente.
+        if Verificar_Data(Data_Hora_Anterior, Data_Hora_Atual):
+
             print("Dado repetido")
             print("Historico Obtido:", Historico_de_Dados)
-            API_ID_Anterior = API_Novo_ID
             continue
 
         else:
+            # Identifica a chegada de uma nova leitura.
             print("Novo dado encontrado")
 
+            # Atualiza o identificador e a data de referência.
             API_ID_Anterior = API_Novo_ID
             Data_Hora_Anterior = Data_Hora_Atual
 
-            Dados_Atualizados = True
-
+            # Processa os novos valores dos sensores.
             Atualizar_Objetos()
+
+            # Armazena os dados processados no banco de dados.
             Atualizar_Banco()
 
             print("Estado da Atualizacao:", Dados_Atualizados)
             print("ID Novo:", API_Novo_ID)
             print("ID Anterior:", API_ID_Anterior)
 
+
+# Rota responsável por disponibilizar os dados da estação ao frontend.
 @app.route("/dados", methods=["GET"])
 def Obter_Dados():
+
+    # Permite alterar a variável global após enviar a resposta.
     global Dados_Atualizados
 
+    # Verifica se foi solicitada uma consulta histórica por data.
     if request.args.get("data"):
-        return Filtrar_Dados(request, jsonify)
+        return Filtrar_Dados()
 
+    # Monta um dicionário contendo os dados que serão enviados em JSON.
     resposta = {
+
+        # Identificação da estação meteorológica.
         "Nome_Estacao": Nome_Estacao,
-        "temperatura": Temperatura.Campo_Valor[-1],
-        "umidade": Umidade.Campo_Valor[-1],
-        "luminosidade": Luminosidade.Campo_Valor[-1],
-        "gás": Gas.Campo_Valor[-1],
-        "pressão": Pressao.Campo_Valor[-1],
+
+        # Valores atuais dos sensores.
+        "temperatura": Corrigir_Valor_JSON(Temperatura.Campo_Filtrado[-1]),
+        "umidade": Corrigir_Valor_JSON(Umidade.Campo_Valor[-1]),
+        "luminosidade": Corrigir_Valor_JSON(Luminosidade.Campo_Valor[-1]),
+        "gás": Corrigir_Valor_JSON(Gas.Campo_Valor[-1]),
+        "pressão": Corrigir_Valor_JSON(Pressao.Campo_Valor[-1]),
+
+        # Informações sobre a atualização e o histórico de leituras.
         "Qtd_Atualizados": Qtd_Campos_Atualizados,
         "Historico_de_Dados": Historico_de_Dados,
         "Data_Hora": Data_Hora_Atual,
         "Atualizacao": Dados_Atualizados,
         "Codigo_HTTP": Status_Code,
+
+        # Coordenadas geográficas da estação.
         "latitude": latitude,
-        "longitude": longitude
+        "longitude": longitude,
+
+        # Lista de alertas e indicador de existência de alertas.
+        "alerta": Lista_Alerta,
+        "estado_alerta": OBJ_Alerta.TemAlerta
     }
 
+    # Reseta a indicação de atualização após preparar a resposta.
     Dados_Atualizados = False
-    return jsonify(Limpar_Valores_JSON(resposta))
 
+    # Converte o dicionário em uma resposta JSON para o frontend.
+    return jsonify(resposta)
+
+
+# Cria uma thread independente para executar o ciclo de atualização.
+# O daemon permite que a thread seja encerrada junto com o processo principal.
+# Fica fora do bloco __main__ para funcionar quando a aplicação é iniciada pelo Gunicorn.
+threading.Thread(
+    target=Main,
+    daemon=True
+).start()
+
+
+# Executa o servidor Flask diretamente quando o arquivo é iniciado como programa principal.
+# No Render, o Gunicorn importa o objeto app e assume a inicialização do servidor.
 if __name__ == "__main__":
-    threading.Thread(
-        target=Main,
-        daemon=True
-    ).start()
 
     app.run(
         host="0.0.0.0",
@@ -1969,16 +2326,24 @@ if __name__ == "__main__":
 <summary> Banco.py </summary>
 
 ```csharp
+# Importa a biblioteca responsável por acessar variáveis e recursos do sistema operacional.
 import os
-import mysql.connector
-from dotenv import load_dotenv
-from datetime import datetime
-from js.Back_End.Data import Formatar_para_MYSQL
 
-# Carrega as variáveis de ambiente
+# Importa a biblioteca utilizada para conectar e executar comandos no MySQL.
+import mysql.connector
+
+# Importa a função responsável por carregar as variáveis de ambiente do arquivo .env.
+from dotenv import load_dotenv
+
+# Importa recursos para trabalhar com datas e horários.
+from datetime import datetime
+
+
+# Carrega as variáveis de ambiente armazenadas no arquivo .env.
 load_dotenv()
 
-# Cria a conexão com o banco de dados
+
+# Cria a conexão com o banco de dados MySQL utilizando as informações do arquivo .env.
 conexao = mysql.connector.connect(
     host=os.getenv("DB_host"),
     port=os.getenv("DB_port"),
@@ -1987,53 +2352,73 @@ conexao = mysql.connector.connect(
     database=os.getenv("DB_database")
 )
 
-# As funções abaixo executam SELECTs e INSERTs no banco de dados.
+
+# As funções abaixo realizam consultas (SELECT) e inserções (INSERT) no banco de dados.
 
 
-# Busca o nome da estação
+# Busca o nome da estação meteorológica cadastrada no banco.
 def Puxar_Nome_Estacao():
+
+    # Cria um cursor que retorna os resultados das consultas em formato de dicionário.
     cursor = conexao.cursor(dictionary=True)
 
     try:
+        # Define o comando SQL para buscar o nome da estação.
         Select_Nome_Estacao = """
             SELECT Nome_Estacao
             FROM tbEstacao;
         """
 
+        # Executa o comando SQL no banco de dados.
         cursor.execute(Select_Nome_Estacao)
+
+        # Recupera todos os registros encontrados.
         resultado = cursor.fetchall()
 
+        # Exibe o resultado da consulta no console.
         print("Estação:", resultado)
 
+        # Verifica se algum registro foi encontrado.
         if resultado:
             return resultado[0]["Nome_Estacao"]
 
+        # Caso não encontre registros, retorna None.
         return None
 
+    # Captura erros relacionados ao MySQL.
     except mysql.connector.Error as erro:
         print("Erro ao buscar estação:", erro)
         raise
 
+    # Fecha o cursor independentemente do resultado da operação.
     finally:
         cursor.close()
 
 
-# Busca todo o histórico de leituras
+# Busca todos os registros de leituras armazenados no histórico.
 def Puxar_Historico():
+
+    # Cria um cursor que retorna os resultados em formato de dicionário.
     cursor = conexao.cursor(dictionary=True)
 
     try:
+        # Define o comando SQL para buscar todas as informações das leituras.
         Historico_Select = """
             SELECT Id_Estacao, temperatura, qualidade_ar,
                    luminosidade, umidade, pressao, data_hora
             FROM tbLeitura;
         """
 
+        # Executa a consulta no banco de dados.
         cursor.execute(Historico_Select)
+
+        # Recupera todos os registros encontrados.
         resultado = cursor.fetchall()
 
+        # Exibe o histórico recebido no console.
         print("Histórico Puxado no Banco:", resultado)
 
+        # Retorna a lista com todos os registros encontrados.
         return resultado
 
     except mysql.connector.Error as erro:
@@ -2041,46 +2426,77 @@ def Puxar_Historico():
         raise
 
     finally:
+        # Fecha o cursor após finalizar a consulta.
         cursor.close()
 
 
-# Busca as leituras de uma data específica
+# Busca as leituras meteorológicas correspondentes a uma data específica.
 def Pegar_Dados_Filtrados(Data_do_Filtro):
+
+    # Cria um cursor para executar comandos SQL e receber resultados em dicionários.
     cursor = conexao.cursor(dictionary=True)
 
     try:
-        Data_do_Filtro = Formatar_para_MYSQL(Data_do_Filtro)
-
-        if Data_do_Filtro is None:
+        # Verifica se alguma data foi recebida.
+        # Caso contrário, retorna uma lista vazia.
+        if not Data_do_Filtro:
             return []
 
-        # Extrai somente a data: YYYY-MM-DD
-        Data_do_Filtro = Data_do_Filtro[:10]
+        # Tenta converter a data recebida para o formato de data do Python.
+        try:
+            Data_Formatada = datetime.strptime(Data_do_Filtro, "%Y-%m-%d").date()
 
+        # Caso a data esteja em um formato inválido, gera um erro.
+        except (ValueError, TypeError):
+            raise ValueError(f"Data inválida recebida no filtro: {Data_do_Filtro}")
+
+        # Define o comando SQL para buscar as leituras do dia selecionado.
+        # DATE_ADD adiciona um dia à data para estabelecer o limite final da consulta.
         Select_Dados = """
-            SELECT *
+            SELECT Id_Estacao, temperatura, qualidade_ar,
+                   luminosidade, umidade, pressao, data_hora
             FROM tbLeitura
-            WHERE DATE(data_hora) = %s;
+            WHERE data_hora >= %s
+              AND data_hora < DATE_ADD(%s, INTERVAL 1 DAY)
+            ORDER BY data_hora ASC;
         """
 
-        cursor.execute(Select_Dados, (Data_do_Filtro,))
+        # Executa a consulta utilizando a data recebida como parâmetro.
+        cursor.execute(
+            Select_Dados,
+            (Data_Formatada, Data_Formatada)
+        )
+
+        # Recupera todos os registros correspondentes à data selecionada.
         resultado = cursor.fetchall()
 
+        # Exibe a data filtrada e a quantidade de registros encontrados.
+        print(
+            f"Filtro: {Data_Formatada} | "
+            f"Registros encontrados: {len(resultado)}"
+        )
+
+        # Retorna os registros encontrados.
         return resultado
 
-    except mysql.connector.Error as erro:
-        print("MYSQL ERRO:", erro)
+    # Captura erros que possam ocorrer durante a consulta.
+    except Exception as erro:
+        print("ERRO AO BUSCAR DADOS FILTRADOS:", repr(erro))
         raise
 
     finally:
+        # Fecha o cursor após finalizar a operação.
         cursor.close()
 
 
-# Busca a data da leitura mais recente
+# Busca a data e o horário da leitura mais recente registrada no banco.
 def Puxar_Data():
+
+    # Cria um cursor que retorna os resultados em formato de dicionário.
     cursor = conexao.cursor(dictionary=True)
 
     try:
+        # Define o comando SQL para buscar a leitura mais recente.
         Data_Select = """
             SELECT data_hora
             FROM tbLeitura
@@ -2088,24 +2504,27 @@ def Puxar_Data():
             LIMIT 1;
         """
 
+        # Executa a consulta no banco.
         cursor.execute(Data_Select)
+
+        # Recupera somente o primeiro registro encontrado.
         resultado = cursor.fetchone()
 
-        # Não existe nenhuma leitura no banco
+        # Verifica se não existem leituras cadastradas.
         if resultado is None:
             print("Nenhuma leitura encontrada.")
             return None
 
-        # Existe uma leitura
+        # Obtém a data e o horário do registro encontrado.
         Data = resultado["data_hora"]
 
-        if isinstance(Data, datetime):
-            Data_Formatada = Data.strftime("%Y-%m-%d %H:%M:%S")
-        else:
-            Data_Formatada = str(Data)
+        # Converte a data para texto.
+        Data_Formatada = str(Data)
 
+        # Exibe a data obtida no console.
         print("Resultado Retornado:", Data_Formatada)
 
+        # Retorna a data formatada.
         return Data_Formatada
 
     except mysql.connector.Error as erro:
@@ -2113,21 +2532,29 @@ def Puxar_Data():
         raise
 
     finally:
+        # Fecha o cursor após finalizar a consulta.
         cursor.close()
 
 
-# Busca o primeiro ID da tabela informada
+# Busca o primeiro ID existente na tabela informada.
 def Puxar_Id(Tabela):
+
+    # Cria um cursor para executar a consulta e receber resultados em dicionários.
     cursor = conexao.cursor(dictionary=True)
 
     try:
+        # Verifica qual tabela foi informada e define sua respectiva coluna de ID.
         if Tabela == "tbLeitura":
             Coluna_Id = "Id_Leitura"
+
         elif Tabela == "tbEstacao":
             Coluna_Id = "Id_Estacao"
+
+        # Caso a tabela não seja reconhecida, gera um erro.
         else:
             raise ValueError("Tabela inválida.")
 
+        # Monta o comando SQL para buscar o menor ID da tabela.
         Id_Tabela = f"""
             SELECT {Coluna_Id}
             FROM {Tabela}
@@ -2135,12 +2562,17 @@ def Puxar_Id(Tabela):
             LIMIT 1;
         """
 
+        # Executa a consulta no banco de dados.
         cursor.execute(Id_Tabela)
+
+        # Recupera o primeiro registro encontrado.
         resultado = cursor.fetchone()
 
+        # Caso não existam registros, retorna None.
         if resultado is None:
             return None
 
+        # Retorna o valor do ID encontrado.
         return resultado[Coluna_Id]
 
     except mysql.connector.Error as erro:
@@ -2148,22 +2580,31 @@ def Puxar_Id(Tabela):
         raise
 
     finally:
+        # Fecha o cursor após finalizar a consulta.
         cursor.close()
 
 
-# Insere dados no banco de dados
+# Insere novos dados na tabela informada do banco de dados.
 def Inserir_Dados_no_Banco(Dados_Leitura, Tabela):
+
+    # Cria um cursor para executar comandos SQL.
     cursor = conexao.cursor()
 
     try:
+        # Verifica se os dados serão inseridos na tabela de estações.
         if Tabela == "tbEstacao":
+
+            # Define o comando SQL para inserir os dados da estação.
             Leitura = """
                 INSERT INTO tbEstacao
                 (Id_Estacao, Nome_Estacao, Latitude, Longitude)
                 VALUES (%s, %s, %s, %s);
             """
 
+        # Verifica se os dados serão inseridos na tabela de leituras.
         elif Tabela == "tbLeitura":
+
+            # Define o comando SQL para inserir os dados meteorológicos.
             Leitura = """
                 INSERT INTO tbLeitura
                 (Id_Estacao, temperatura, qualidade_ar,
@@ -2171,34 +2612,52 @@ def Inserir_Dados_no_Banco(Dados_Leitura, Tabela):
                 VALUES (%s, %s, %s, %s, %s, %s, %s);
             """
 
+        # Caso a tabela informada não seja reconhecida, gera um erro.
         else:
             raise ValueError("Tabela inválida.")
 
+        # Executa o comando SQL utilizando os dados recebidos como parâmetros.
         cursor.execute(Leitura, Dados_Leitura)
+
+        # Confirma a inserção dos dados no banco de dados.
         conexao.commit()
 
+        # Exibe o ID gerado pelo banco após a inserção.
         print("Dados inseridos no Banco:", cursor.lastrowid)
 
+        # Retorna o ID do registro inserido.
         return cursor.lastrowid
 
+    # Caso ocorra algum erro durante a inserção, executa o tratamento abaixo.
     except Exception as erro:
+
+        # Desfaz as alterações realizadas na transação.
         conexao.rollback()
+
+        # Exibe o erro ocorrido durante a inserção.
         print("Erro ao inserir:", erro)
+
+        # Repassa o erro para que possa ser tratado em outra parte do programa.
         raise
 
     finally:
+        # Fecha o cursor após finalizar a operação.
         cursor.close()
 
 
-# Verifica se a conexão está ativa
+# Verifica se a conexão com o banco de dados está ativa.
 if conexao.is_connected():
     print("Conectado ao MySQL!")
 
-
-# Encerra a conexão quando necessário
+# Encerra a conexão com o banco de dados quando necessário.
 def Fechar_Conexao():
+
+    # Verifica se a conexão ainda está ativa antes de fechá-la.
     if conexao.is_connected():
+
+        # Encerra a conexão com o MySQL.
         conexao.close()
+        # Exibe uma mensagem confirmando o encerramento.
         print("Conexão com MySQL encerrada.")
 ```
 
@@ -2207,49 +2666,85 @@ def Fechar_Conexao():
 <summary> Dados.py </summary>
 
 ```csharp
+# Cria a classe responsável por armazenar e organizar os dados meteorológicos.
 class Dado:
+
+    # Atributo de classe que contabiliza a quantidade de registros atualizados.
     Qtd_Atualizado = 0
+
+    # Inicializa a classe recebendo o tipo de dado e a referência dos dados.
     def __init__(self, Campo_Tipo, Ref_Dados):
+        # Armazena o tipo de informação que será trabalhada.
         self.Campo_Tipo = Campo_Tipo
+        # Cria uma lista para armazenar as datas dos registros.
         self.Campo_Data = []
+        # Cria uma lista para armazenar os valores numéricos dos registros.
         self.Campo_Valor = []
+        # Cria uma lista para armazenar os dados após algum processo de filtragem.
+        self.Campo_Filtrado = []
+        # Adiciona os dados recebidos às listas correspondentes.
         self.Adicionar_Dados(Ref_Dados)
 
+
+    # Percorre os dados recebidos e separa seus valores e datas.
     def Adicionar_Dados(self, Ref_Dado):
+        # Percorre cada registro recebido.
         for Dados in Ref_Dado:
             try:
+                # Tenta converter o valor do registro para o formato float.
                 Valor_Float = float(Dados[self.Campo_Tipo])
+            # Caso a conversão falhe, atribui NaN (valor numérico inválido).
             except (ValueError, TypeError):
                 Valor_Float = float("nan")
 
+            # Armazena o valor convertido na lista de valores.
             self.Campo_Valor.append(Valor_Float)
+            # Armazena a data correspondente ao registro.
             self.Campo_Data.append(Dados["created_at"])
 
+
+    # Atualiza os dados armazenados com uma nova lista de registros.
     def Atualizar_Dados(self, Ref_Dados):
+
+        # Limpa os valores antigos antes de inserir os novos registros.
         self.Campo_Valor = []
         self.Campo_Data = []
-
+        # Zera o contador de registros atualizados.
         Dado.Zerar_Contabilizador()
 
+        # Percorre os novos registros recebidos.
         for Dados in Ref_Dados:
             try:
+                # Tenta converter o valor do registro para float.
                 Valor_Float = float(Dados[self.Campo_Tipo])
+            # Caso a conversão falhe, atribui NaN.
             except (ValueError, TypeError):
                 Valor_Float = float("nan")
 
+            # Adiciona o valor convertido à lista de valores.
             self.Campo_Valor.append(Valor_Float)
+            # Adiciona a data correspondente à lista de datas.
             self.Campo_Data.append(Dados["created_at"])
-
+            # Incrementa o contador de registros processados.
             Dado.Contabilizar_Campos_Registrados()
 
+
+    # Método estático responsável por incrementar o contador de registros.
+    # Pode ser utilizado diretamente pela classe, sem criar um objeto.
     @staticmethod
     def Contabilizar_Campos_Registrados():
+        # Incrementa a quantidade de registros atualizados.
         Dado.Qtd_Atualizado += 1
+        # Retorna a quantidade atualizada.
         return Dado.Qtd_Atualizado
 
+
+    # Método estático responsável por zerar o contador de registros.
     @staticmethod
     def Zerar_Contabilizador():
+        # Reinicia o contador de registros.
         Dado.Qtd_Atualizado = 0
+        # Retorna o contador após ser zerado.
         return Dado.Qtd_Atualizado
 ```
 
@@ -2351,126 +2846,337 @@ API = HTTP(os.getenv("API_URL"))
 <summary> Dashboard.js </summary>
 
 ```csharp
+// Variável global utilizada para armazenar os dados da atualização padrão.
 let dados;
+
+// Lista que armazena os registros recém chegados do Back-End para apresentar no formato de um histórico de registros.
 let Registro_do_Historico = [];
+
+// Variável global para controle do estado de filtragem. Se verdadeiro, pausa a atualização padrão da aplicação por um período maior.
 let Pausar_Atualização = false;
+
+// Contador utilizado para determinar qual registro será inserido no Dashboard.
 let Contador_Registros;
+
+//
 let Ultimo_Dado;
 
+// URL que possui a rota em que os dados do Back-End são enviados.
 const RENDER_URL = "https://projetos-estacao-meteorol-gica.onrender.com/dados";
-const Filtro_de_Data = document.getElementById("Date_Filter");
 
+// Identifica o elemento de filtrar da página "Index" e da página de "Análise".
+const Filtro_de_Data = document.getElementById("Date_Filter") ?? document.getElementById("Date_Filter_Report")
+
+// Lista que receberá os gráficos de cada tipo de dado posteriormente.
+const Graficos = {};
+
+// Controle para identificar se formulário de filtrar por data existe para depois aplicar o evento.
 if (Filtro_de_Data) {
     Filtro_de_Data.addEventListener("change", Filtrar_por_Data);
 } else {
     console.log("Botão de filtrar não encontrado");
 }
 
-async function Buscar_Dados() {
-    // Verifica se o Flask respondeu corretamente.
-    const resposta = await fetch(RENDER_URL);
-
-    if (!resposta.ok) {
-        throw new Error(`Erro HTTP: ${resposta.status}`);
+// Função auxiliar para retornar os dados ao Back-End. Recebe a informação e uma String para criar o caminho (url).
+async function Retornar_Dados_ao_Back(Dado_a_Retornar, Local_STR) {
+    try {
+        const URL = `${RENDER_URL}?${Local_STR}=${encodeURIComponent(Dado_a_Retornar)}`;
+        const resposta = await fetch(URL);
+        return resposta;
+    } catch (erro) {
+        throw erro;
     }
-
-    dados = await resposta.json();
-    console.log("Dados recebidos do Flask:", dados);
-
-    // Adapta os nomes dos campos caso o Flask
-    // retorne os nomes originais das colunas do MySQL.
-    if (dados && typeof dados === "object" && !Array.isArray(dados)) {
-        dados.pressão ??= dados.pressao;
-        dados.gás ??= dados.qualidade_ar;
-
-        if (!dados.Historico_de_Dados) {
-            dados.Historico_de_Dados = dados.historico ?? [];
-        }
-
-        if (!dados.Nome_Estacao) {
-            dados.Nome_Estacao = dados.nome_estacao ?? "ClimaSys";
-        }
-
-        if (dados.Historico_de_Dados.length > 0) {
-            const Ultimo = dados.Historico_de_Dados[
-                dados.Historico_de_Dados.length - 1
-            ];
-
-            dados.temperatura ??= Ultimo.temperatura;
-            dados.umidade ??= Ultimo.umidade;
-            dados.pressão ??= Ultimo.pressao ?? Ultimo.pressão;
-            dados.luminosidade ??= Ultimo.luminosidade;
-            dados.gás ??= Ultimo.qualidade_ar ?? Ultimo.gás;
-            dados.Data_Hora ??= Ultimo.data_hora ?? Ultimo.created_at;
-        }
-    }
-
-    return dados;
 }
 
-function Criar_Relatorio() {
-    const exportBtn = Array.from(document.querySelectorAll("button"))
-        .find(btn => btn.textContent.includes("Gerar Relatório CSV"));
+// Função auxiliar que altera a data recebida para o modelo e UTC de São Paulo.
+function Formatar_Data_Sao_Paulo(Data_Entrada) {
+    if (!Data_Entrada) return "";
+    
+    const Data = new Date(Data_Entrada);
+    
+    if (isNaN(Data.getTime())) return "";
 
-    if (exportBtn && !exportBtn.dataset.csvListener) {
-        // Evita registrar o evento duas vezes.
-        exportBtn.dataset.csvListener = "true";
+// Retorna a data em formato de string no modelo de data e hora e no UTC de São Paulo.
+    return Data.toLocaleString("pt-BR", {
+        timeZone: "America/Sao_Paulo"
+    });
+}
 
-        exportBtn.addEventListener("click", (e) => {
-            e.preventDefault();
+// Função para o lançamento dos alertas
+async function enviarNotificacao() {
+    if (!("Notification" in window)) {
+        alert("Seu navegador não suporta notificações.");
+        return;
+    }
 
-            if (!dados || !Ultimo_Dado) {
-                console.warn("Nenhum dado disponível para exportar.");
-                return;
-            }
+    const permissao = await Notification.requestPermission();
 
-            const reportData = [
-                ["Data", "Estacao", "Temperatura (C)", "Umidade (%)", "Pressão do Ar", "Luminosidade", "Status"],
-                [
-                    Ultimo_Dado.data_hora ?? Ultimo_Dado.Data_Hora ?? "--",
-                    dados.Nome_Estacao,
-                    Ultimo_Dado.temperatura ?? "--",
-                    Ultimo_Dado.umidade ?? "--",
-                    Ultimo_Dado.pressao ?? Ultimo_Dado.pressão ?? "--",
-                    Ultimo_Dado.luminosidade ?? "--",
-                    dados.Codigo_HTTP ?? "--"
-                ]
-            ];
-
-            // Protege valores com vírgulas e aspas.
-            const csvContent = "\uFEFF" + reportData
-                .map(linha => linha.map(valor =>
-                    `"${String(valor ?? "--").replace(/"/g, '""')}"`
-                ).join(";"))
-                .join("\r\n");
-
-            const arquivo = new Blob([csvContent], {
-                type: "text/csv;charset=utf-8;"
-            });
-
-            const link = document.createElement("a");
-            const URL_Arquivo = URL.createObjectURL(arquivo);
-
-            link.href = URL_Arquivo;
-            link.download = `relatorio_climatico_${new Date().toISOString().slice(0, 10)}.csv`;
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(URL_Arquivo);
+    if (permissao === "granted") {
+        let notificacao = new Notification("Estação Meteorológica", {
+            body: dados.alerta[0].mensagem
         });
+
+        notificacao.onclick = () => {
+            window.focus();
+        };
+
+    } else {
+        alert("Permissão para notificações não concedida.");
     }
 }
 
+// Função auxiliar que busca os dados na rota "/dados".
+async function Buscar_Dados() {
+    try {
+        const resposta = await fetch(RENDER_URL);
+        if (!resposta.ok) {
+            throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
+        // A variável de escopo global recebe a resposta da requisição no formato json. Portanto, todas as outras funções que recebam "dados", serão atualizadas.
+        dados = await resposta.json();
+        console.log("Dados recebidos:", dados)
+    } catch (erro) {
+        console.error("Erro ao buscar dados do Flask:", erro);
+        return null;
+    }
+}
+
+// Função auxiliar que usa da biblioteca "chart" para renderizar os gráficos com base nos dados atuais.
+function Renderizar_Grafico(historico) {
+    // Controle para verificar se o "historico" recebido é uma lista e define um valor. Se for nulo, retorna uma lista vazia. Senão, retorna com os valores de histórico.
+    const lista = Array.isArray(historico) ? historico : (historico?.Historico_de_Dados || []);
+
+    // Verifica se a lista possui algum valor dentro dela, senão, retorna um aviso.
+    if (!Array.isArray(lista) || lista.length === 0) {
+        console.warn("Nenhum histórico disponível para os gráficos.");
+        return;
+    }
+
+    // Se a biblioteca não existir, para a função.
+    if (typeof Chart === "undefined") {
+        console.error("A biblioteca Chart.js não foi encontrada.");
+        return;
+    }
+
+    // Armazena os tipos possíveis de dado, aplicando um nome, uma chave e unidade únicos.
+    const Tipos_Possiveis = [
+        {
+            chave: "temperatura",
+            nome: "Temperatura",
+            unidade: "°C",
+            cor: "#ff0404"
+        },
+        {
+            chave: "umidade",
+            nome: "Umidade",
+            unidade: "%",
+            cor: "#0431fc"
+        },
+        {
+            chave: "pressão",
+            nome: "Pressão atmosférica",
+            unidade: "hPa",
+            cor: "#ff8503"
+        },
+        {
+            chave: "luminosidade",
+            nome: "Luminosidade",
+            unidade: "",
+            cor: "#ffea00"
+        },
+        {
+            chave: "gás",
+            nome: "Qualidade do ar (gás)",
+            unidade: "",
+            cor: "#5e6f69"
+        }
+    ];
+
+    // Cria o eixo horizontal abaixo dos gráficos com base na data e hora de cada registro.
+    const labels = lista.map((item, index) => {
+        const data = item.data_hora ?? item.Data_Hora;
+
+        return data? Formatar_Data_Sao_Paulo(data): `Registro ${index + 1}`; 
+    });
+
+    // Para cada tipo, desenha um novo gráfico para cada tipo e aplica os valores.
+    Tipos_Possiveis.forEach(tipo => {
+        const canvas = document.getElementById(
+            `graficoHistorico_${tipo.chave}`
+        );
+
+        if (!canvas) {
+            console.warn(`Canvas não encontrado: graficoHistorico_${tipo.chave}`);
+            return;
+        }
+
+        // Percorre a lista de dados e extrai os valores correspondentes ao tipo selecionado.
+        const valores = lista.map(item => {
+            const valor = item[tipo.chave]
+                ?? item[tipo.chave === "pressão" ? "pressao" :
+                        tipo.chave === "gás" ? "qualidade_ar" :
+                        tipo.chave === "temperatura" ? "Temperatura" :
+                        tipo.chave === "umidade" ? "Umidade" :
+                        "Luminosidade"];
+
+            return valor == null || valor === ""
+                ? null
+                : Number(valor);
+        });
+
+          // Se o gráfico ter sido feito e não for nulo, aplica os valores e o texto inferior com os valores das datas.
+        if (Graficos[tipo.chave]) {
+            Graficos[tipo.chave].data.labels = labels;
+            Graficos[tipo.chave].data.datasets[0].data = valores;
+            Graficos[tipo.chave].update();
+            return;
+        }
+
+        // Nessa parte, personalizamos parte do gráfico com base na lista anteriormente citada de "Tipos_Possiveis", aplicando cor, nome e unidade. 
+        Graficos[tipo.chave] = new Chart(canvas.getContext("2d"), {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: `${tipo.nome} ${tipo.unidade}`,
+                    data: valores,
+                    borderColor: tipo.cor,
+                    backgroundColor: tipo.cor + "30",
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    spanGaps: false,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: {
+                                size: 9
+                            },
+                            boxWidth: 12,
+                            padding: 8
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 8
+                            },
+                            autoSkip: true,
+                            // Nessa parte, limitamos a quantidade de "horas" na parte horizontal abaixo do gráfico, podem aparecer. Ou seja, aparecerão um total de 15 horas diferentes, para melhor visualização. 
+                            maxTicksLimit: 15,
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
+                    }
+                }
+            }
+        });
+    });
+}
+
+
+// Função que administra a criação de arquivos CSV com base no dado atual na aplicação.
+function Criar_Relatorio(Fonte_de_Dados){ 
+    // Busca o botão de exportação do relatório.
+    const exportBtn = document.getElementById("btnRelatorio") || Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Gerar Relatório CSV'));
+
+    if (!exportBtn) {
+        console.warn("Botão de gerar relatório não encontrado.");
+        return;
+    }
+
+    // Evento de quando o botão é clicado. Se não existir uma fonte de dados, para a função.
+    exportBtn.onclick = async (e) => {
+        e.preventDefault();
+        if (!Fonte_de_Dados) {
+            alert("Não foi possível carregar os dados para gerar o relatório.");
+            return;
+        }
+        
+    //  Verificação da estrutura dos dados recebidos para que "linhasHistórico" sempre receba uma lista.
+        let linhasHistorico = [];
+        if (Array.isArray(Fonte_de_Dados.Historico_de_Dados) && Fonte_de_Dados.Historico_de_Dados.length > 0) {
+            linhasHistorico = Fonte_de_Dados.Historico_de_Dados;
+        } else if (Array.isArray(Fonte_de_Dados)) {
+            linhasHistorico = Fonte_de_Dados;
+        } else {
+            linhasHistorico = [Fonte_de_Dados];
+        }
+    
+    // Variável que contém os títulos das colunas
+        const reportData = [["Data_Hora", "Estacao", "Temperatura", "Umidade", "Pressao", "Luminosidade", "Gas", "Codigo_HTTP"]];
+        
+    // Para cada linha de histórico existente, aplica os dados à "reportData".
+        linhasHistorico.forEach(item => {
+            reportData.push([
+                item.data_hora || item.Data_Hora || Fonte_de_Dados.Data_Hora || "",
+                Fonte_de_Dados.Nome_Estacao || item.Nome_Estacao || "",
+                item.temperatura ?? Fonte_de_Dados.temperatura ?? "",
+                item.umidade ?? Fonte_de_Dados.umidade ?? "",
+                item.pressão ?? Fonte_de_Dados.pressão ?? "",
+                item.luminosidade ?? Fonte_de_Dados.luminosidade ?? "",
+                item.gás ?? Fonte_de_Dados.gás ?? "",
+                Fonte_de_Dados.Codigo_HTTP || item.Codigo_HTTP || "200"
+            ]);
+        });
+
+        // Converte cada linha do relatório em texto, separando as colunas por ponto e vírgula.
+        let csvRows = reportData.map(linha => linha.join(";"));
+
+        // Junta todas as linhas em uma única string, separando-as por quebras de linha.
+        // O \uFEFF adiciona uma marca de identificação para facilitar a leitura de caracteres especiais.
+        let csvString = "\uFEFF" + csvRows.join("\n");
+
+        // Cria um arquivo CSV temporário a partir dos dados.
+        let blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+
+        // Gera uma URL temporária para permitir o download do arquivo.
+        let url = URL.createObjectURL(blob);
+
+        // Cria um elemento de link HTML para iniciar o download.
+        let link = document.createElement("a");
+
+        // Define o endereço do arquivo e o nome que será utilizado no download.
+        link.setAttribute("href", url);
+        link.setAttribute("download", `relatorio_climatico.csv`);
+
+        // Adiciona o link à página, inicia o download e depois remove o elemento.
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+}
+
+// Atualiza a aba de recebimento com novos dados, caso existam novos dados.
 function Atualizar_Recebimento(dados) {
+    if(!dados){
+        return
+    }
     if (dados.Historico_de_Dados && dados.Historico_de_Dados.length > 0) {
         Pegar_Elemento_Por_ID("Recent_Station_Name", dados.Nome_Estacao, "");
         Pegar_Elemento_Por_ID("Recent_Station_Data", "Enviou novos dados.", "");
-        Pegar_Elemento_Por_ID(
-            "Recent_Station_Time",
-            dados.Data_Hora ?? dados.data_hora ?? "--",
-            ""
-        );
+        Pegar_Elemento_Por_ID("Recent_Station_Time",Formatar_Data_Sao_Paulo(dados.Data_Hora ?? dados.data_hora),"");
     } else {
         Pegar_Elemento_Por_ID("Recent_Station_Name", dados.Nome_Estacao, "");
         Pegar_Elemento_Por_ID("Recent_Station_Data", "Sem dados.", "");
@@ -2478,7 +3184,12 @@ function Atualizar_Recebimento(dados) {
     }
 }
 
+// Atualiza a análise com novos dados, caso existam novos dados.
 function Atualizar_Analise(dados) {
+    if(!dados){
+        return
+    }
+
     if (dados.Historico_de_Dados && dados.Historico_de_Dados.length > 0) {
         Pegar_Elemento_Por_ID("Analytics_Station_Name", dados.Nome_Estacao, "");
         Pegar_Elemento_Por_ID("Analytics_Station_Data", "Enviou novos dados.", "");
@@ -2490,35 +3201,54 @@ function Atualizar_Analise(dados) {
         Pegar_Elemento_Por_ID("Analytics_Time", "Sem atualização.", "");
     }
 }
-
+// Atualiza a tabela de históricos com os dados recebidos.
 function Atualizar_Tabela_de_Historicos(dados) {
-    console.log("ATUALIZAR TABELAS");
-    console.log("Histórico:", dados.Historico_de_Dados);
 
+    // Verifica se existem dados recebidos. Caso contrário, encerra a função.
+    if (!dados) {
+        return;
+    }
+
+    // Obtém o histórico de dados. Caso não exista, utiliza um array vazio.
     Registro_do_Historico = dados.Historico_de_Dados ?? [];
 
+    // Armazena os registros do histórico em uma variável para facilitar o acesso.
     let Tabela_Historico_de_Dados = Registro_do_Historico;
+
+    // Obtém a quantidade de registros, considerando o índice do último elemento.
     let Tamanho_Total = Tabela_Historico_de_Dados.length - 1;
 
+    // Procura o corpo da primeira tabela na página.
     let tbody = document.querySelector(".recent-orders tbody");
 
+    // Caso não encontre, procura o corpo de uma segunda tabela.
     if (!tbody) {
         tbody = document.querySelector(".table-card tbody");
     }
 
-    // Verifica o tbody antes de usá-lo e limpa as linhas anteriores para não duplicar os registros.
+    // Verifica se alguma tabela foi encontrada. Caso contrário, exibe um erro e encerra a função.
     if (!tbody) {
         console.error("Tabela não encontrada.");
         return;
     }
 
+    // Limpa o conteúdo atual da tabela antes de inserir os novos registros.
     tbody.innerHTML = "";
 
+    // Verifica se o histórico está vazio.
     if (Tabela_Historico_de_Dados.length === 0) {
+
+        // Cria uma linha informando que não existem registros disponíveis.
         let tr = document.createElement("tr");
         tr.innerHTML = `<td colspan="4">Nenhum registro encontrado.</td>`;
+
+        // Adiciona a mensagem à tabela.
         tbody.appendChild(tr);
+
     } else {
+
+        // Chama a função responsável por percorrer os registros e preencher a tabela.
+        // Utiliza 10 registros para a primeira tabela ou 20 para a segunda.
         Looping_Registros(
             Tamanho_Total,
             tbody.closest(".recent-orders") ? 10 : 20,
@@ -2527,42 +3257,38 @@ function Atualizar_Tabela_de_Historicos(dados) {
             Tabela_Historico_de_Dados
         );
     }
-
-    console.log(tbody);
 }
-
+// Looping que serve para aplicar os últimos registros inseridos.
 function Looping_Registros(Tamanho_Total, Limite_Repeticoes, Contador_Registros, tbody, Tabela_Historico_de_Dados) {
-    while (
-        Limite_Repeticoes > Contador_Registros &&
-        Tamanho_Total >= 0
-    ) {
+    // É um while "decrescente". Ou seja, ele vai do último elemento até o "n"gésimo registro passado em "Limite_Repeticoes".
+    while (Limite_Repeticoes > Contador_Registros && Tamanho_Total >= 0) {
         const Registro = Tabela_Historico_de_Dados[Tamanho_Total];
 
-        // Utiliza o registro recebido, não um índice que possa estar desatualizado.
         const Data_Registro = Registro.data_hora ?? Registro.Data_Hora ?? Registro.created_at;
         const Data = Data_Registro ? new Date(Data_Registro) : null;
         const data_formatada = Data && !isNaN(Data.getTime())
             ? Data.toLocaleString("pt-BR")
-            : "--";
+            : "";
 
         let tr = document.createElement("tr");
 
+        /* Cria uma nova "linha" com nome da estação, o Id do registro atual e a data formatada.
+           A base para pegar essa informação é o "Registro".
+        */
         tr.innerHTML = `
-            <td>${dados.Nome_Estacao ?? "--"}</td>
-            <td>${Registro.Id_Estacao ?? "--"}</td>
+            <td>${dados.Nome_Estacao ?? ""}</td>
+            <td>${Registro.Id_Estacao ?? ""}</td>
             <td>${data_formatada}</td>
             <td class="success">${dados.Codigo_HTTP ?? "200 OK"}</td>
         `;
 
         tbody.appendChild(tr);
-
         Tamanho_Total--;
         Contador_Registros++;
     }
-
-    Contador_Registros = Contador_Registros;
 }
 
+// Função auxiliar para pegar o elemento pelo ID e aplicar o valor passado,  à esse elemento.
 function Pegar_Elemento_Por_ID(ID, Valor_Preencher, Sinal) {
     const Elemento_HTML = document.getElementById(ID);
 
@@ -2572,9 +3298,10 @@ function Pegar_Elemento_Por_ID(ID, Valor_Preencher, Sinal) {
     }
 
     Elemento_HTML.textContent =
-        `${Valor_Preencher ?? "--"} ${Sinal ?? ""}`.trim();
+        `${Valor_Preencher ?? ""} ${Sinal ?? ""}`.trim();
 }
 
+// Função auxiliar para limpar a tabela de históricos.
 function Limpar_Tabela() {
     let tbody = document.querySelector(".recent-orders tbody");
 
@@ -2587,28 +3314,9 @@ function Limpar_Tabela() {
     }
 }
 
-function Limpar_Dashboard() {
-    Limpar_Tabela();
-    Pegar_Elemento_Por_ID("temperatura", "--", "°C");
-    Pegar_Elemento_Por_ID("%_temperatura", "--", "%");
-    Pegar_Elemento_Por_ID("umidade", "--", "%");
-    Pegar_Elemento_Por_ID("%_umidade", "--", "%");
-    Pegar_Elemento_Por_ID("pressão", "--", "hPa");
-    Pegar_Elemento_Por_ID("%_pressão", "--", "%");
-    Pegar_Elemento_Por_ID("luminosidade", "--", "");
-    Pegar_Elemento_Por_ID("%_luminosidade", "--", "%");
-    Pegar_Elemento_Por_ID("gás", "--", "");
-    Pegar_Elemento_Por_ID("%_gas", "--", "%");
-
-    Pegar_Elemento_Por_ID("Recent_Station_Name", "--", "");
-    Pegar_Elemento_Por_ID("Recent_Station_Data", "Sem dados.", "");
-    Pegar_Elemento_Por_ID("Recent_Station_Time", "Sem atualização.", "");
-    Pegar_Elemento_Por_ID("Analytics_Station_Name", "--", "");
-    Pegar_Elemento_Por_ID("Analytics_Station_Data", "Sem dados.", "");
-    Pegar_Elemento_Por_ID("Analytics_Updates_Value", 0, "");
-    Pegar_Elemento_Por_ID("Analytics_Time", "Sem atualização.", "");
-}
-
+/* Função auxiliar. Atualiza o progresso do círculo ao redor das variáveis.
+   Determina o valor máximo com base na variável, permitindo que o preenchimento seja dinâmico e não fixo.
+*/
 function Atualizar_Progresso_Circulo(seletorClasse, valor, valorMaximo) {
     const circulo = document.querySelector(`.${seletorClasse} svg circle`);
     if (!circulo) return;
@@ -2636,6 +3344,7 @@ function Atualizar_Progresso_Circulo(seletorClasse, valor, valorMaximo) {
     circulo.style.strokeDashoffset = circunferencia - (circunferencia * porcentagem) / 100;
 }
 
+// Função auxiliar. Converte a temperatura de Celsius para Fahrenheit. Troca o sinal e faz a conversão correta.
 function Converter_Temperatura(valorCelsius) {
     if (
         valorCelsius === null ||
@@ -2643,7 +3352,7 @@ function Converter_Temperatura(valorCelsius) {
         valorCelsius === "" ||
         !Number.isFinite(Number(valorCelsius))
     ) {
-        return { valor: "--", sinal: "°C" };
+        return { valor: "", sinal: "°C" };
     }
 
     const unidadeGuardada = localStorage.getItem("pref_temp_unit");
@@ -2663,22 +3372,24 @@ function Converter_Temperatura(valorCelsius) {
     };
 }
 
+// Função auxiliar que identifica os elementos do HTML e aplica os dados neles.
 function Agrupar_Elementos(dados) {
-    if (!dados) return;
-
     if (!Pausar_Atualização) {
         Atualizar_Recebimento(dados);
         Atualizar_Analise(dados);
     }
 
+    //
     const tempConvertida = Converter_Temperatura(dados.temperatura);
 
+    // Variáveis auxiliares para ajustar a porcentagem dos valores recebidos.
     let pctTemp = dados.temperatura != null ? Math.min(Number(dados.temperatura) || 0, 100) : 0;
     let pctUmid = Number(dados.umidade) || 0;
     let pctPressao = dados.pressão != null ? (Number(dados.pressão) / 1100) * 100 : 0;
     let pctLuz = Number(dados.luminosidade) || 0;
     let pctGas = Number(dados.gás) || 0;
 
+    // Função que pega o elemento pelo id (string) e aplica os valores e o sinal de preferência (último parâmetro).
     Pegar_Elemento_Por_ID("temperatura", tempConvertida.valor, tempConvertida.sinal);
     Pegar_Elemento_Por_ID("%_temperatura", Math.round(pctTemp), "%");
 
@@ -2694,153 +3405,114 @@ function Agrupar_Elementos(dados) {
     Pegar_Elemento_Por_ID("gás", dados.gás, "");
     Pegar_Elemento_Por_ID("%_gas", Math.round(pctGas), "%");
 
+    // Função que atualiza o preenchimento dos "círculos" que rodeam o valor da variável.
     Atualizar_Progresso_Circulo("temperature", pctTemp, 50);
     Atualizar_Progresso_Circulo("humidity", pctUmid, 100);
     Atualizar_Progresso_Circulo("windspeed", pctPressao, 100);
     Atualizar_Progresso_Circulo("luz", pctLuz, 5000);
     Atualizar_Progresso_Circulo("Gás", pctGas, 100);
-
-    console.log("ELEMENTOS E TEMPERATURA ATUALIZADOS");
 }
 
-async function Carregar_Primeira_Vez() {
+// Função auxiliar para retornar os dados ao Back-End. Recebe a informação e uma String para criar o caminho (url).
+async function Retornar_Dados_ao_Back(Dado_a_Retornar, Local_STR) {
     try {
-        const Dados_Recebidos = await Buscar_Dados();
-
-        Agrupar_Elementos(Dados_Recebidos);
-        Atualizar_Tabela_de_Historicos(Dados_Recebidos);
-
-        Ultimo_Dado = Registro_do_Historico.at(-1) ?? null;
-
-        console.log("CARREGOU");
+        const URL = `${RENDER_URL}?${Local_STR}=${encodeURIComponent(Dado_a_Retornar)}`;
+        const resposta = await fetch(URL);
+        return resposta;
     } catch (erro) {
-        console.error("Erro ao carregar:", erro);
+        throw erro;
     }
 }
 
-async function Atualizar_Dashboard() {
-    // Não recebe argumentos antigos. Usa a resposta atual da API.
-    try {
-        if (Pausar_Atualização) return;
-
-        const Dados_Recebidos = await Buscar_Dados();
-
-        if (Dados_Recebidos.Atualizacao || Dados_Recebidos.Historico_de_Dados?.length) {
-            Agrupar_Elementos(Dados_Recebidos);
-            Atualizar_Tabela_de_Historicos(Dados_Recebidos);
-
-            Ultimo_Dado = Registro_do_Historico.at(-1) ?? null;
-        } else {
-            console.log("Nenhuma atualização.");
-        }
-    } catch (erro) {
-        console.error("Erro ao atualizar:", erro);
-    }
-}
-
+// Função para filtro das informações com base na data selecionada pelo usuário.
 async function Filtrar_por_Data() {
-    const Input_Data =
-        document.getElementById("Date_Filter") ??
-        document.querySelector('input[type="date"]');
-
+    Input_Data = Filtro_de_Data
     if (!Input_Data) {
         console.error("Campo de data não encontrado.");
         return;
     }
 
-    const Data_Selecionada = Input_Data.value;
+    let Data_Selecionada = Input_Data.value;
 
-    // Ao limpar a data, retorna à atualização normal.
     if (!Data_Selecionada) {
+        // Se a data não existir ou for selecionada, atualiza com os dados padrões mais recentes.
         Pausar_Atualização = false;
-        await Carregar_Primeira_Vez();
+        Atualizar_Estado(dados)
         return;
     }
 
     Pausar_Atualização = true;
 
+    // Envia a data para o Back-End, esperando um retorno do mesmo. Os dados exibidos no Dash são os últimos registrados no dia escolhido.
     try {
-        const Resposta_Filtro = await Retornar_Dados_ao_Back(
-            Data_Selecionada,
-            "data"
-        );
-
+        // Envia a data ao Back-End.
+        const Resposta_Filtro = await Retornar_Dados_ao_Back(Data_Selecionada,"data");
+        // Espera o retorno da resposta do filtro.
         const dados_filtrados = await Resposta_Filtro.json();
+        console.log("todos os dados:", dados_filtrados)
+        // Separa os últimos dados do arquivo json recebido.
+        const Ultimo_Registro = dados_filtrados.at(-1);
 
-        // O Flask retorna uma lista de registros do MySQL.
         if (!Array.isArray(dados_filtrados)) {
             console.error("Resposta inesperada do Flask:", dados_filtrados);
             return;
         }
-
-        Limpar_Dashboard();
-
-        if (dados_filtrados.length === 0) {
-            Registro_do_Historico = [];
-            Ultimo_Dado = null;
-
-            Atualizar_Tabela_de_Historicos({
-                Nome_Estacao: dados?.Nome_Estacao ?? "ClimaSys",
-                Historico_de_Dados: []
-            });
-
-            Pegar_Elemento_Por_ID(
-                "Recent_Station_Data",
-                "Nenhum registro nessa data.",
-                ""
-            );
-
-            return;
+        // Se tiver o último registro, atualiza com base nos últimos dados recebidos do filtro. 
+        if(Ultimo_Registro){
+        Atualizar_Estado(Ultimo_Registro)
         }
-
-        // Adapta a lista filtrada ao formato esperado pelas funções existentes do dashboard.
-        const Historico_Filtrado = dados_filtrados.map(Registro => ({
-            ...Registro,
-            pressão: Registro.pressão ?? Registro.pressao ?? null,
-            gás: Registro.gás ?? Registro.qualidade_ar ?? null
-        }));
-
-        const Ultimo_Registro = Historico_Filtrado.at(-1);
-        Ultimo_Dado = Ultimo_Registro;
-
-        const Dados_Dashboard = {
-            Nome_Estacao: dados?.Nome_Estacao ?? "ClimaSys",
-            temperatura: Ultimo_Registro.temperatura ?? null,
-            umidade: Ultimo_Registro.umidade ?? null,
-            pressão: Ultimo_Registro.pressão,
-            luminosidade: Ultimo_Registro.luminosidade ?? null,
-            gás: Ultimo_Registro.gás,
-            Codigo_HTTP: "200 OK",
-            Qtd_Atualizados: Historico_Filtrado.length,
-            Atualizacao: true,
-            Data_Hora: Ultimo_Registro.data_hora ?? null,
-            Historico_de_Dados: Historico_Filtrado
-        };
-
-        // Permite atualizar os indicadores mesmo durante o filtro.
-        Agrupar_Elementos(Dados_Dashboard);
-        Atualizar_Tabela_de_Historicos(Dados_Dashboard);
-
-        console.log("Dados filtrados:", Historico_Filtrado);
+        // Se não, atualiza com os dados base.
+        else{
+            Filtro_de_Data.value = "";
+            Atualizar_Estado(dados)
+        }
+        
     } catch (erro) {
         console.error("ERRO NO FILTRO:", erro);
+    // E, nessa parte, temos um formato de "duração" da tela de filtro. Depois do tempo específicado, a aplicação volta para o funcionamento padrão.
     } finally {
-        Pausar_Atualização = false;
+        setTimeout(() => {
+            Pausar_Atualização = false;
+            Atualizar_Estado(dados);
+        }, 30000);
     }
 }
 
-async function Iniciar_Programa() {
-    await Carregar_Primeira_Vez();
+// Função que inicia o funcionamento da aplicação e a alimentação com os dados mais recentes.
+async function Iniciar_Programa() { 
+    /* Busca os dados, chamando a função "Buscar_Dados" que atualiza uma variável global "dados".
+    */
+    await Buscar_Dados();
+    await Atualizar_Estado(dados)
+    Criar_Relatorio(dados);
 
-    Criar_Relatorio();
+    if(dados.estado_alerta){
+        enviarNotificacao()
+    }
 
+    // No caso de não haver um filtro, espera por um total de 10 segundos antes de fazer uma nova requisição ao Back-End.
     setInterval(() => {
         if (!Pausar_Atualização) {
-            Atualizar_Dashboard();
+            Buscar_Dados();
+            Atualizar_Estado(dados)
         }
-    }, 10000);
+    }, 5000);
 }
 
+/* Função com o próposito de atualizar todos os conteúdos da aplicação com base em uma "Fonte_de_Dados".
+   Quando em processo de atualização comum, a fonte de dados é a variável global "dados". Agora, no caso de haver um filtro, essa função é chamada com um argumento diferente.
+*/
+async function Atualizar_Estado(Fonte_de_Dados){
+    // Atualiza todos os elementos com base no argumento passado.
+    Agrupar_Elementos(Fonte_de_Dados);
+    Atualizar_Analise(Fonte_de_Dados);
+    Atualizar_Recebimento(Fonte_de_Dados);
+    Atualizar_Tabela_de_Historicos(Fonte_de_Dados);
+    Renderizar_Grafico(Fonte_de_Dados);
+    Criar_Relatorio(Fonte_de_Dados);
+}
+
+// Inicia o programa ao iniciar o looping de atualização.
 Iniciar_Programa();
 ```
 
@@ -2849,25 +3521,44 @@ Iniciar_Programa();
 <summary> Mapa.js </summary>
 
 ```csharp
+// Define o endereço da API que fornece os dados da estação meteorológica.
 const RENDER_URL = "https://projetos-estacao-meteorol-gica.onrender.com/dados";
+
+// Declara uma variável para armazenar os dados recebidos da API.
 let dados;
 
-// Puxa os dados da API para cá.
+// Busca os dados da API e armazena a resposta recebida.
 async function Buscar_Dados() {
+
+    // Realiza uma requisição à API utilizando o método fetch().
     const resposta = await fetch(RENDER_URL);
+
+    // Verifica se a resposta foi recebida corretamente.
+    // Caso contrário, lança um erro com o código HTTP.
     if (!resposta.ok) {
         throw new Error(`Erro HTTP: ${resposta.status}`);
     }
 
+    // Converte a resposta da API para o formato JSON.
     dados = await resposta.json();
+
+    // Exibe os dados recebidos no console para conferência.
     console.log(dados);
+
+    // Retorna os dados obtidos.
     return dados;
 }
 
-// Cria o mapa somente após receber os dados da API (com a função Buscar_Dados() ). Depois, aplica a longitude e latitude, nome e temperatura recebidos.
+// Busca o elemento do HTML onde o mapa será exibido.
 const mapElement = document.getElementById('map');
+
+// Verifica se o elemento do mapa existe e se a biblioteca Leaflet está disponível.
 if (mapElement && typeof L !== 'undefined') {
+
+    // Inicializa o mapa com as coordenadas iniciais e o nível de aproximação.
     const map = L.map('map').setView([-23.4735, -46.7231], 13);
+
+    // Define o estilo visual do mapa utilizando imagens fornecidas pelo serviço ArcGIS.
     L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
         {
@@ -2875,9 +3566,13 @@ if (mapElement && typeof L !== 'undefined') {
         }
     ).addTo(map);
 
-    // Espera os dados da API
+    // Busca os dados da estação meteorológica antes de adicionar sua localização ao mapa.
     Buscar_Dados()
+
+        // Executa quando os dados da API são recebidos corretamente.
         .then(dados => {
+
+            // Organiza as informações da estação em um objeto.
             const station = {
                 name: dados.Nome_Estacao ?? "Estação sem nome",
                 status: "Online",
@@ -2885,11 +3580,15 @@ if (mapElement && typeof L !== 'undefined') {
                 lat: Number(dados.latitude),
                 lng: Number(dados.longitude)
             };
-            //verificação das coordenadas
+
+            // Verifica se a latitude e a longitude recebidas são válidas.
             if (isNaN(station.lat) || isNaN(station.lng)) {
                 console.error("Coordenadas inválidas:", station);
                 return;
             }
+
+            // Cria um marcador no mapa utilizando as coordenadas da estação.
+            // Também adiciona uma janela com o nome, status e temperatura da estação.
             L.marker([station.lat, station.lng])
                 .addTo(map)
                 .bindPopup(`
@@ -2898,10 +3597,15 @@ if (mapElement && typeof L !== 'undefined') {
                     Temp: ${station.temp} °C
                 `);
         })
+
+        // Caso ocorra algum erro durante a busca ou processamento dos dados,
+        // exibe uma mensagem no console.
         .catch(erro => {
             console.error("Erro ao carregar dados da estação:", erro);
         });
 
+    // Aguarda 300 milissegundos e recalcula o tamanho do mapa.
+    // Isso ajuda a corrigir problemas de exibição quando o mapa é carregado.
     setTimeout(() => {
         map.invalidateSize();
     }, 300);
@@ -2913,32 +3617,50 @@ if (mapElement && typeof L !== 'undefined') {
 <summary> Preferencias.js </summary>
 
 ```csharp
-    // Busca os elementos de "Query" no html da página. Inclusive, adiciona um texto ao botão que, no contexto da página, serve para salvar as preferências
-    const tempUnitSelect = document.querySelector('.settings-form select');
-    const emailCheckbox = document.querySelector('.settings-form input[type="checkbox"]');
-    const saveSettingsBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Salvar Alterações'));
+// Busca os elementos de configuração no HTML da página:
+// seletor de unidade de temperatura, caixa de seleção de notificações
+// e botão responsável por salvar as alterações.
+const tempUnitSelect = document.querySelector('.settings-form select');
+const emailCheckbox = document.querySelector('.settings-form input[type="checkbox"]');
+const saveSettingsBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Salvar Alterações'));
 
-    // Caso os itens existam, ele pega os valores de preferência e, ao salvar e confirmar, armazena os valores escolhidos pelo usuário
-    if (tempUnitSelect && emailCheckbox) {
-        const savedUnit = localStorage.getItem('pref_temp_unit');
-        const savedEmailNotif = localStorage.getItem('pref_email_notif');
+// Verifica se os campos de preferência existem antes de recuperar os valores salvos.
+if (tempUnitSelect && emailCheckbox) {
 
-        if (savedUnit) tempUnitSelect.value = savedUnit;
-        if (savedEmailNotif !== null) emailCheckbox.checked = JSON.parse(savedEmailNotif);
-    }
+    // Recupera as preferências armazenadas anteriormente no localStorage.
+    const savedUnit = localStorage.getItem('pref_temp_unit');
+    const savedEmailNotif = localStorage.getItem('pref_email_notif');
 
-    if (saveSettingsBtn) {
-        saveSettingsBtn.addEventListener('click', (e) => {
-            e.preventDefault();
+    // Preenche os campos com as preferências salvas, caso existam.
+    if (savedUnit) tempUnitSelect.value = savedUnit;
 
-            if (tempUnitSelect && emailCheckbox) {
-                localStorage.setItem('pref_temp_unit', tempUnitSelect.value);
-                localStorage.setItem('pref_email_notif', emailCheckbox.checked);
+    // Converte o valor armazenado em JSON para booleano e atualiza a caixa de seleção.
+    if (savedEmailNotif !== null) emailCheckbox.checked = JSON.parse(savedEmailNotif);
+}
 
-                alert('Preferências salvas com sucesso!');
-            }
-        });
-    }
+// Verifica se o botão de salvar foi encontrado.
+if (saveSettingsBtn) {
+
+    // Adiciona um evento de clique ao botão para salvar as preferências.
+    saveSettingsBtn.addEventListener('click', (e) => {
+
+        // Impede o comportamento padrão do botão, como o envio de um formulário.
+        e.preventDefault();
+
+        // Verifica se os campos de preferência existem.
+        if (tempUnitSelect && emailCheckbox) {
+
+            // Armazena a unidade de temperatura escolhida pelo usuário no localStorage.
+            localStorage.setItem('pref_temp_unit', tempUnitSelect.value);
+
+            // Armazena a preferência de notificações por e-mail.
+            localStorage.setItem('pref_email_notif', emailCheckbox.checked);
+
+            // Exibe uma mensagem confirmando que as preferências foram salvas.
+            alert('Preferências salvas com sucesso!');
+        }
+    });
+}
 ```
 
 </details>
