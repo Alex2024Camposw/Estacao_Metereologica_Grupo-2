@@ -30,7 +30,27 @@ O projeto consiste no desenvolvimento de uma Estação Meteorológica capaz de r
 <br>No Back-End, são realizados o processamento dos dados, a aplicação de filtros para identificação e exclusão de possíveis anomalias e a comunicação com o banco de dados MySQL. Já o Front-End disponibiliza uma interface visual para que o usuário possa acompanhar as medições, consultar históricos e visualizar informações da estação meteorológica.
 <br>Dessa forma, o projeto busca oferecer uma solução integrada para o monitoramento ambiental, garantindo maior organização, confiabilidade e facilidade de acesso aos dados coletados.
 
-#  1.3. Guia de Instalação
+#  1.3. Guia de Instalação e Implementação Web
+## 1.3.1. Tecnologias Necessárias
+Para o funcionamento e a disponibilização do projeto na Web, são utilizadas diferentes tecnologias que permitem a integração entre o Front-End, Back-End e banco de dados. O desenvolvimento do Back-End utiliza Python e Flask, responsáveis pelo processamento das informações e gerenciamento das requisições HTTP. O Front-End utiliza HTML, CSS e JavaScript para estruturar, estilizar e apresentar os dados meteorológicos ao usuário. Para o armazenamento das informações, é utilizado o MySQL, enquanto o Git e o GitHub são empregados no versionamento e gerenciamento do código-fonte. Em relação à infraestrutura de hospedagem, o Vercel é responsável pela disponibilização do Front-End, o Render pela execução do Back-End e o Aiven pela hospedagem e gerenciamento do banco de dados MySQL.
+
+## 1.3.2. Obtenção do Código-Fonte
+Inicialmente, é necessário obter os arquivos do projeto por meio do repositório oficial disponibilizado no GitHub. A plataforma permite acessar, consultar e baixar todos os arquivos necessários para a execução da aplicação. Para realizar esse procedimento, basta acessar o repositório, selecionar a opção de clonagem e executar o comando correspondente no terminal, ou utilizar a opção de download dos arquivos em formato ZIP. Dessa maneira, será possível obter a estrutura completa do projeto, incluindo os arquivos responsáveis pelo Back-End, Front-End e demais configurações.
+
+## 1.3.3. Instalação das Dependências
+Após obter o código-fonte, é necessário instalar as dependências utilizadas no desenvolvimento da aplicação. Para isso, deve-se possuir o Python instalado no ambiente de execução e acessar o diretório principal do projeto por meio do terminal. Em seguida, utilizando o arquivo `requirements.txt`, que reúne as bibliotecas necessárias para o funcionamento do Back-End, basta executar o comando `pip install -r requirements.txt`. Esse procedimento realiza a instalação automática dos pacotes utilizados pela aplicação, como Flask, Flask-Cors, NumPy, Requests e demais bibliotecas especificadas no arquivo.
+
+## 1.3.4. Configuração do Ambiente
+Com as dependências instaladas, deve-se realizar a configuração das variáveis de ambiente necessárias para a comunicação entre os componentes do sistema. Essas configurações incluem os dados de conexão com o banco de dados MySQL hospedado na plataforma Aiven, além de outras informações utilizadas pelo Back-End. Para isso, deve-se criar e configurar o arquivo `.env`, preenchendo as variáveis com os respectivos valores fornecidos pelos serviços utilizados. É importante garantir que as credenciais de acesso sejam mantidas em segurança, evitando sua exposição no repositório público do GitHub.
+
+## 1.3.5. Execução Local
+Após concluir as configurações, a aplicação poderá ser executada localmente para verificar seu funcionamento antes da implantação definitiva na Web. Para iniciar o Back-End, deve-se acessar o diretório principal do projeto e executar o comando `python -m js.Main_Back` no terminal. Com o servidor iniciado, será possível realizar requisições à aplicação e verificar a comunicação com o banco de dados, além de testar o recebimento, processamento e disponibilização das informações meteorológicas. O Front-End poderá ser acessado localmente por meio de um servidor HTTP, permitindo validar a interface e suas funcionalidades.
+
+## 1.3.6. Implantação e Hospedagem Web
+A disponibilização do projeto na Internet é realizada por meio da integração de três plataformas distintas. O Front-End é hospedado no Vercel, responsável por disponibilizar os arquivos HTML, CSS e JavaScript e permitir o acesso à interface por meio de uma URL pública. O Back-End é implantado no Render, que executa a aplicação Python utilizando o servidor Gunicorn, responsável por atender às requisições recebidas e processar os dados meteorológicos. Já o banco de dados MySQL é hospedado na plataforma Aiven, que oferece a infraestrutura necessária para armazenar, organizar e disponibilizar os registros utilizados pela aplicação. Durante a implantação, é necessário configurar corretamente as variáveis de ambiente, os endereços de comunicação e as permissões de acesso entre os serviços, garantindo a integração adequada entre os três componentes.
+
+## 1.3.7. Acesso à Aplicação
+Após a conclusão da implantação e a configuração dos serviços, a aplicação estará disponível para acesso pela Internet, por meio do endereço público fornecido pelo Vercel. O usuário poderá acessar o sistema diretamente pelo navegador, sem precisar instalar ou executar manualmente os componentes do projeto. A interface permitirá acompanhar as informações coletadas pela Estação Meteorológica, visualizar os dados processados pelo Back-End e consultar os registros armazenados no banco de dados MySQL hospedado na Aiven.
 
 #  1.4. Esquemas Eletrônicos
 ## 1.4.1. Esquema Eletrônico
