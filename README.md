@@ -11,7 +11,7 @@
 >- `Youtube:` (URL).
 
 > [!NOTE]
-> Wiki Estruturada:
+ > `Wiki Estruturada:`
 >  * [1. ESTAÇÃO METEREOLÓGICA](https://github.com/Alex2024Camposw/Estacao_Metereologica_Grupo-2/wiki/1.-Esta%C3%A7%C3%A3o-Metereol%C3%B3gica)
 >  * [2. CODIFICAÇÃO](https://github.com/Alex2024Camposw/Estacao_Metereologica_Grupo-2/wiki/2.-Codifica%C3%A7%C3%A3o)
 
