@@ -1,5 +1,5 @@
 >[!Important]
- > `Repositório - Estação Metereológica`
+ > `Repositório - Estação Meteorológica`
 >- Turma: 2° Semestre de Ciência da Computação.
 >- Faculdade: Universidade Paulista.
 >- Polo: UNIP Marquês.
@@ -15,7 +15,7 @@
 >  * [1. ESTAÇÃO METEREOLÓGICA](https://github.com/Alex2024Camposw/Estacao_Metereologica_Grupo-2/wiki/1.-Esta%C3%A7%C3%A3o-Metereol%C3%B3gica)
 >  * [2. CODIFICAÇÃO](https://github.com/Alex2024Camposw/Estacao_Metereologica_Grupo-2/wiki/2.-Codifica%C3%A7%C3%A3o)
 
-# 1. ESTAÇÃO METEREOLÓGICA:
+# 1. ESTAÇÃO METEOROLÓGICA:
 #  1.1. Objetivo da Página
  Àrea referente ao projeto da Estação Metereológica, desenvolvida para o 2° semestre de Ciência da Computação. O projeto integra hardware e software, propondo uma solução funcional e completa referente à extração e monitoramento de dados ambientais, junto à filtragem e exclusão de anomalias. Para tal propósito, foi feita uma aplicação com Back-End, Front-End e banco de dados para armazenamento e posteriores consultas de dados metereológicos.
 <br> O grupo é composto por:
