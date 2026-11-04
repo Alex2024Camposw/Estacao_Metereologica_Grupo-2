@@ -11,16 +11,77 @@
 >- `Youtube:` (URL).
 
 > [!NOTE]
-> Wiki Estruturada
+> Wiki Estruturada:
+>  * [1. Estação Metereológica](https://github.com/Alex2024Camposw/Estacao_Metereologica_Grupo-2/wiki/1.-Esta%C3%A7%C3%A3o-Metereol%C3%B3gica)
+>  * [2. CODIFICAÇÃO](https://github.com/Alex2024Camposw/Estacao_Metereologica_Grupo-2/wiki/2.-Codifica%C3%A7%C3%A3o)
 
-> [!NOTE]
-> Referente ao Projeto:
+# 1. ESTAÇÃO METEREOLÓGICA:
+#  1.1. Objetivo da Página
+ Àrea referente ao projeto da Estação Metereológica, desenvolvida para o 2° semestre de Ciência da Computação. O projeto integra hardware e software, propondo uma solução funcional e completa referente à extração e monitoramento de dados ambientais, junto à filtragem e exclusão de anomalias. Para tal propósito, foi feita uma aplicação com Back-End, Front-End e banco de dados para armazenamento e posteriores consultas de dados metereológicos.
+<br> O grupo é composto por:
+ * Alex Campos de Oliveira;
+ * Rafael Arruda;
+ * Rafael Alamino;
+ * Rafael Torso.
 
-> [!NOTE]
-> Codificação da Aplicação com Comentários:
-<details>
- <summary> <strong>HTML</strong> </summary>
+#  1.2. O Que é o Projeto?
+O projeto consiste no desenvolvimento de uma Estação Meteorológica capaz de realizar a coleta, o processamento e o monitoramento de dados ambientais por meio de sensores físicos.
+<br>A estrutura integra componentes de hardware, responsáveis pela captação de informações como temperatura, umidade, luminosidade, concentração de gases e pressão atmosférica, a uma aplicação de software responsável pelo recebimento, tratamento e armazenamento dessas informações.
+<br>No Back-End, são realizados o processamento dos dados, a aplicação de filtros para identificação e exclusão de possíveis anomalias e a comunicação com o banco de dados MySQL. Já o Front-End disponibiliza uma interface visual para que o usuário possa acompanhar as medições, consultar históricos e visualizar informações da estação meteorológica.
+<br>Dessa forma, o projeto busca oferecer uma solução integrada para o monitoramento ambiental, garantindo maior organização, confiabilidade e facilidade de acesso aos dados coletados.
 
+#  1.3. Guia de Instalação
+
+#  1.4. Esquemas Eletrônicos
+## 1.4.1. Esquema Eletrônico
+| <p align = "center">  Imagem - Esquema Eletrônico do Protótipo Físico Final </p> | 
+|---|
+| <img width="100%" height="80%" alt="image" src="" />|
+| <p align = "center"> Fonte: Grupo 2, 2026. </p> |
+
+
+#  1.5. Fotos do Protótipo
+
+## 1.5.1. Protótipo Físico Final
+| <p align = "center">  Imagem - Protótipo Físico Final </p> | 
+|---|
+| <img width="100%" height="80%" alt="image" src="https://github.com/user-attachments/assets/eb07876f-17ce-4c83-9811-8d2abdb0c1f8" />|
+| <p align = "center"> Fonte: Grupo 2, 2026. </p> |
+
+## 1.5.2. Protótipo Físico I
+| <p align = "center">  Imagem - Protótipo Físico I </p> | 
+|---|
+| <img width="100%" height="80%" alt="image" src="<img width="610" height="397" alt="image" src="https://github.com/user-attachments/assets/7bf32f68-1efe-4e15-afe3-584d7cdae32b" />"|
+| <p align = "center"> Fonte: Grupo 2, 2026. </p> |
+
+## 1.5.3. Protótipo Físico II
+| <p align = "center">  Imagem - Protótipo Físico II </p> | 
+|---|
+| <img width="100%" height="80%" alt="image" src="https://github.com/user-attachments/assets/eb07876f-17ce-4c83-9811-8d2abdb0c1f8" />|
+| <p align = "center"> Fonte: Grupo 2, 2026. </p> |
+
+#  1.6. Demonstrações da Interface
+
+## 1.6.1. Interface I
+| <p align = "center">  Interface I </p> | 
+|---|
+| <img width="854" height="480" alt="ITF I" src="https://github.com/user-attachments/assets/376c22d6-128e-4ad9-94e8-c6fc7b83da57"/> |
+| <p align = "center"> Fonte: Grupo 2, 2026. </p> |
+
+## 1.6.2. Interface II
+| <p align = "center">  Interface I </p> | 
+|---|
+| |
+| <p align = "center"> Fonte: Grupo 2, 2026. </p> |
+
+## 1.6.3. Interface III
+| <p align = "center">  Interface I </p> | 
+|---|
+| |
+| <p align = "center"> Fonte: Grupo 2, 2026. </p> |
+
+# 2. CODIFICAÇÃO:
+<summary> <strong>HTML</strong> </summary>
 <details>
 <summary> Index.HTML </summary>
  
