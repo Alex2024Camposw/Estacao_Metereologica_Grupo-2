@@ -10,8 +10,11 @@
  > `Referências`
 >- `Youtube:` (URL).
 
+> [!NOTE]
+> Codificação da Aplicação com Comentários:
+ 
 <details>
-<summary> HTML </summary>
+ <summary> <strong>HTML</strong> </summary>
 
 <details>
 <summary> Index.HTML </summary>
@@ -535,7 +538,7 @@
 </details>
 
 <details>
-<summary> CSS </summary>
+<summary> <strong>CSS</strong>  </summary>
 <details>
 <summary> style.css </summary>
 
@@ -1810,7 +1813,7 @@ main .recent-orders a {
 </details>
 
 <details>
-<summary> SQL </summary>
+<summary> <strong>SQL</strong>  </summary>
 
 <details>
 <summary> Estacao_Metereologica.sql </summary>
@@ -1876,7 +1879,7 @@ WHERE DATE(data_hora) = '2026-09-30';
 </details>
 
 <details>
-<summary> Back-End </summary>
+<summary> <strong>Back-End</strong>  </summary>
  <details>
 <summary> Main_Back.py </summary>
   
@@ -2841,7 +2844,7 @@ API = HTTP(os.getenv("API_URL"))
 </details>
 
 <details>
-<summary> Front-End </summary>
+<summary> <strong>Front-End</strong>  </summary>
 <details>
 <summary> Dashboard.js </summary>
 
