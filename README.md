@@ -1910,7 +1910,7 @@ main .recent-orders a {
 
 <details>
 <summary> Estacao_Metereologica.sql </summary>
-
+ 
 ```csharp
 create database Estacao_Meteorologica;
 use Estacao_Meteorologica;
@@ -1937,38 +1937,30 @@ create table tbLeitura(
  foreign key (Id_Estacao) references tbEstacao(Id_Estacao)
 );
 
-select * from tbLeitura;
+-- Alterando as tabelas para o modelo requisitado pelo documento, apagando valores nulos e os substituindo por um valor padrão de "0".
+alter table tbLeitura modify column temperatura float(4,2) not null default 0;
+alter table tbLeitura modify column qualidade_ar int not null default 0;
+alter table tbLeitura modify column  luminosidade int not null default 0;
+alter table tbLeitura modify column umidade float(4,2) not null default 0;
+alter table tbLeitura modify column pressao float(4,2) not null default 0;
+alter table tbLeitura modify column data_hora timestamp not null;
+describe tbLeitura;
 
-select * from tbEstacao;
-
-SELECT Id_Estacao FROM tbEstacao ORDER BY Id_Estacao;
-
-select data_hora from tbLeitura;
-
-select * from tbLeitura;
-
-select * from tbEstacao;
-
-use Estacao_Meteorologica;
-
-select * from tbLeitura;
-
-select * from tbEstacao;
-
-SELECT Id_Estacao FROM tbEstacao ORDER BY Id_Estacao;
-
-select data_hora from tbLeitura;
-
-select * from tbLeitura;
-
-select * from tbEstacao;
-SELECT *
-FROM tbLeitura
-WHERE DATE(data_hora) = '2026-09-30';
+-- Alterando as colunas da tbEstacao para que não aceitem valores nulos. Também alterando o tipo de dado para que seja mais condizente com o que é requisitado.
+alter table tbEstacao modify column latitude point not null;
+alter table tbEstacao modify column longitude point not null;
+describe tbEstacao;
 ```
-
 </details>
-
+<details>
+<summary> Select.sql </summary>
+ 
+```csharp
+select * from tbEstacao;
+select * from tbLeitura;
+select * from tbLeitura where data_hora = '2026-10-01'/
+```
+</details>
 </details>
 
 <details>
