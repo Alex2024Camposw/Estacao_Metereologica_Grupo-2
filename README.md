@@ -56,7 +56,7 @@ Após a conclusão da implantação e a configuração dos serviços, a aplicaç
 ## 1.4.1. Esquema Eletrônico
 | <p align = "center">  Imagem - Esquema Eletrônico do Protótipo Físico Final </p> | 
 |---|
-| <img width="100%" height="80%" alt="image" src="" />|
+| <img width="100%" height="80%" alt="image" src="https://github.com/user-attachments/assets/2568c63b-0380-4f42-9154-4d5c602067f9"/>|
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 
@@ -65,7 +65,7 @@ Após a conclusão da implantação e a configuração dos serviços, a aplicaç
 ## 1.5.1. Protótipo Físico Final
 | <p align = "center">  Imagem - Protótipo Físico Final </p> | 
 |---|
-| |
+| <img width="100%" height="80%" alt="pf" src="https://github.com/user-attachments/assets/33afca8d-1fbc-4ff5-b5fe-7e88d0179a66" />|
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 ## 1.5.2. Protótipo Físico I
