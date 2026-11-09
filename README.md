@@ -103,7 +103,7 @@ Após a conclusão da implantação e a configuração dos serviços, a aplicaç
 ## 1.6.4. Interface IV
 | <p align = "center">  Interface IV </p> | 
 |---|
-| |
+|<img width="854" height="480" alt="ITF 4" src="https://github.com/user-attachments/assets/6d610c4b-d1c0-4217-a6ec-4a98dc81f912" />|
 | <p align = "center"> Fonte: Grupo 2, 2026. </p> |
 
 # 2. CODIFICAÇÃO:
