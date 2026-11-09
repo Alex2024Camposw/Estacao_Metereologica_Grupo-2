@@ -2968,7 +2968,7 @@ if (Filtro_de_Data) {
 // Função auxiliar para retornar os dados ao Back-End. Recebe a informação e uma String para criar o caminho (url).
 async function Retornar_Dados_ao_Back(Dado_a_Retornar, Local_STR) {
     try {
-        const URL = `${RENDER_URL}?${Local_STR}=${encodeURIComponent(Dado_a_Retornar)}`;
+        const URL = `RENDERURL?{Local_STR}=${encodeURIComponent(Dado_a_Retornar)}`;
         const resposta = await fetch(URL);
         return resposta;
     } catch (erro) {
@@ -3488,23 +3488,19 @@ function Agrupar_Elementos(dados) {
     Pegar_Elemento_Por_ID("%_pressão", Math.round(pctPressao), "%");
 
     Pegar_Elemento_Por_ID("luminosidade", dados.luminosidade, "");
-    Pegar_Elemento_Por_ID("%_luminosidade", Math.round(pctLuz), "%");
 
     Pegar_Elemento_Por_ID("gás", dados.gás, "");
-    Pegar_Elemento_Por_ID("%_gas", Math.round(pctGas), "%");
 
     // Função que atualiza o preenchimento dos "círculos" que rodeam o valor da variável.
     Atualizar_Progresso_Circulo("temperature", pctTemp, 50);
     Atualizar_Progresso_Circulo("humidity", pctUmid, 100);
     Atualizar_Progresso_Circulo("windspeed", pctPressao, 100);
-    Atualizar_Progresso_Circulo("luz", pctLuz, 5000);
-    Atualizar_Progresso_Circulo("Gás", pctGas, 100);
 }
 
 // Função auxiliar para retornar os dados ao Back-End. Recebe a informação e uma String para criar o caminho (url).
 async function Retornar_Dados_ao_Back(Dado_a_Retornar, Local_STR) {
     try {
-        const URL = `${RENDER_URL}?${Local_STR}=${encodeURIComponent(Dado_a_Retornar)}`;
+        const URL = `RENDERURL?{Local_STR}=${encodeURIComponent(Dado_a_Retornar)}`;
         const resposta = await fetch(URL);
         return resposta;
     } catch (erro) {
